@@ -7,24 +7,48 @@ import com.krishighar.db.DbConf;
 @DatabaseTable(tableName = DbConf.TABLE_SUBSCRIPTION_CROPS)
 public class Crop {
 	@DatabaseField
-	private int id;
+	private int cropId;
 	@DatabaseField
-	private String name;
+	private String cropName;
+	@DatabaseField
+	private String tag;
 
-	public int getId() {
-		return id;
+	public String getTag() {
+		return tag;
 	}
 
-	public void setId(int id) {
-		this.id = id;
+	public void setTag(String tag) {
+		this.tag = tag;
 	}
 
-	public String getName() {
-		return name;
+	/**
+	 * @return the cropId
+	 */
+	public int getCropId() {
+		return cropId;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	/**
+	 * @param cropId
+	 *            the cropId to set
+	 */
+	public void setCropId(int cropId) {
+		this.cropId = cropId;
+	}
+
+	/**
+	 * @return the cropName
+	 */
+	public String getCropName() {
+		return cropName;
+	}
+
+	/**
+	 * @param cropName
+	 *            the cropName to set
+	 */
+	public void setCropName(String cropName) {
+		this.cropName = cropName;
 	}
 
 }

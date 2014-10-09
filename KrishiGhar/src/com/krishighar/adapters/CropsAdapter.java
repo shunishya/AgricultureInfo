@@ -36,7 +36,7 @@ public class CropsAdapter extends ArrayAdapter<CropsListItem> {
 		} else {
 			holder = (ViewHolder) convertView.getTag();
 		}
-		holder.tvCropName.setText(item.getCrop().getName());
+		holder.tvCropName.setText(item.getCrop().getCropName());
 		if (item.isChecked()) {
 			holder.ivChecked.setVisibility(View.VISIBLE);
 		} else {

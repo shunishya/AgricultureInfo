@@ -8,9 +8,12 @@ import android.content.Intent;
 
 import com.google.android.gcm.GCMBaseIntentService;
 import com.google.android.gcm.GCMRegistrar;
+import com.krishighar.activities.MainActivity;
+import com.krishighar.activities.SendGCMId;
 import com.krishighar.gcm.AppUtil;
 import com.krishighar.gcm.Config;
 import com.krishighar.gcm.GCMMainActivity;
+import com.krishighar.utils.AgricultureInfoPreference;
 
 public class GCMIntentService extends GCMBaseIntentService {
 	private AppUtil appUtil = null;
@@ -40,6 +43,10 @@ public class GCMIntentService extends GCMBaseIntentService {
 	protected void onRegistered(Context context, String registrationId) {
 		if (appUtil == null)
 			appUtil = (AppUtil) getApplicationContext();
+		AgricultureInfoPreference mPrefs = new AgricultureInfoPreference(
+				context);
+		mPrefs.setGCMRegistrationId(registrationId);
+		new SendGCMId(context).sendId();
 		appUtil.displayMessage(context, "GCM Registered.");
 		GCMRegistrar.setRegisteredOnServer(context, true);
 

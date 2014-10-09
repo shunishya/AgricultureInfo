@@ -4,24 +4,36 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.krishighar.activities.MainActivity;
 import com.krishighar.adapters.CropsAdapter;
+import com.krishighar.api.KrishiGharApi;
+import com.krishighar.api.KrishiGharException;
+import com.krishighar.api.models.GetCropsRequest;
+import com.krishighar.api.models.GetCropsResponse;
 import com.krishighar.db.models.Crop;
 import com.krishighar.models.CropsListItem;
+import com.krishighar.utils.AgricultureInfoPreference;
 
 public class SubsciptionCropsFragment extends SherlockListFragment {
 	private MainActivity mActivity;
+	private AgricultureInfoPreference mPref;
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		setListAdapter(new CropsAdapter(getSherlockActivity(), getCropsItem()));
+		mPref = new AgricultureInfoPreference(getSherlockActivity());
+
 		getSherlockActivity().getSupportActionBar().setTitle("Select Crops");
+		GetCropsRequest request = new GetCropsRequest();
+		request.setLocationId(mPref.getLocationId());
+		new GetCrops().execute(request);
 	}
 
 	@Override
@@ -33,12 +45,10 @@ public class SubsciptionCropsFragment extends SherlockListFragment {
 	public static final String[] CROPS = { "Maize", "Rice", "Barley", "Beans",
 			"Mustard", "Sunflower", "Sunflower", "Chyuri", "Jute" };
 
-	public List<CropsListItem> getCropsItem() {
+	public List<CropsListItem> getCropsItem(ArrayList<Crop> crops) {
 		List<CropsListItem> cropsItem = new ArrayList<>();
-		for (int i = 0; i < CROPS.length; i++) {
-			Crop crop = new Crop();
-			crop.setName(CROPS[i]);
-			cropsItem.add(new CropsListItem(crop));
+		for (int i = 0; i < crops.size(); i++) {
+			cropsItem.add(new CropsListItem(crops.get(i)));
 		}
 		return cropsItem;
 	}
@@ -76,5 +86,33 @@ public class SubsciptionCropsFragment extends SherlockListFragment {
 			}
 		}
 		return false;
+	}
+
+	public class GetCrops extends AsyncTask<GetCropsRequest, Void, Object> {
+		KrishiGharApi api = new KrishiGharApi(getSherlockActivity());
+
+		@Override
+		protected Object doInBackground(GetCropsRequest... params) {
+			try {
+				return api.getCrops(params[0]);
+			} catch (KrishiGharException e) {
+				e.printStackTrace();
+				return e;
+			}
+		}
+
+		@Override
+		protected void onPostExecute(Object result) {
+			super.onPostExecute(result);
+			if (result instanceof GetCropsResponse) {
+				GetCropsResponse response = (GetCropsResponse) result;
+				setListAdapter(new CropsAdapter(getSherlockActivity(),
+						getCropsItem(response.getCrops())));
+			} else if (result instanceof KrishiGharException) {
+				Toast.makeText(getSherlockActivity(),
+						"Please try again later.", Toast.LENGTH_SHORT).show();
+			}
+		}
+
 	}
 }

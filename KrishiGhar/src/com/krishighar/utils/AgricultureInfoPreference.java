@@ -45,6 +45,23 @@ public class AgricultureInfoPreference {
 		mEditor.commit();
 	}
 
+	public int getLocationId() {
+		return mSharedPreferences.getInt(LOCATION_ID, 0);
+	}
+
+	public String getLocation() {
+		return mSharedPreferences.getString(LOCATION_NAME, null);
+	}
+
+	public boolean isGCMRegistrationIdSame(String newId) {
+		if (mSharedPreferences.getString(GCM_REGISTRATION_ID, null).equals(
+				newId)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	public void setGCMRegistrationId(String registrationId) {
 		mEditor = mSharedPreferences.edit();
 		mEditor.putString(GCM_REGISTRATION_ID, registrationId);
