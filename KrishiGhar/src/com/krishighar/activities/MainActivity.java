@@ -1,8 +1,5 @@
 package com.krishighar.activities;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,12 +9,10 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.google.android.gcm.GCMRegistrar;
 import com.krishighar.R;
 import com.krishighar.api.KrishiGharApi;
 import com.krishighar.api.KrishiGharException;
 import com.krishighar.api.models.BaseResponse;
-import com.krishighar.api.models.SendGCMRegistrationId;
 import com.krishighar.api.models.SubscribtionRequest;
 import com.krishighar.db.CropDbHelper;
 import com.krishighar.db.models.Crop;
@@ -26,6 +21,9 @@ import com.krishighar.fragments.SubscriptionLocationFragment;
 import com.krishighar.gcm.GCMRegistration;
 import com.krishighar.utils.AgricultureInfoPreference;
 import com.krishighar.utils.DeviceUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends SherlockFragmentActivity {
 	boolean doneVisible;
@@ -128,10 +126,12 @@ public class MainActivity extends SherlockFragmentActivity {
 
 			if (result instanceof BaseResponse) {
 				BaseResponse response = (BaseResponse) result;
-				GCMRegistration registration = new GCMRegistration(
-						MainActivity.this);
-				registration.getRegistrationId();
-				onSuccessfullSubcription();
+				if (!response.isError()) {
+					GCMRegistration registration = new GCMRegistration(
+							MainActivity.this);
+					registration.getRegistrationId();
+					onSuccessfullSubcription();
+				}
 			} else if (result instanceof KrishiGharException) {
 				Toast.makeText(MainActivity.this, "Please try again later.",
 						Toast.LENGTH_SHORT).show();

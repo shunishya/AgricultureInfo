@@ -18,8 +18,8 @@ public class CropsPagerAdapeter extends FragmentPagerAdapter {
 	}
 
 	@Override
-	public Fragment getItem(int arg0) {
-		return CropFragment.newInstance();
+	public Fragment getItem(int position) {
+		return CropFragment.newInstance(mTitles.get(position).getTag());
 	}
 
 	@Override

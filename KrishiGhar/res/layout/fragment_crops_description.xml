@@ -4,11 +4,10 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <TextView
+    <ListView
+        android:id="@+id/lvInfo"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="magine discovering a secret language spoken only online by a knowledgeable and learned few. Over a period of weeks, as you begin to tease out the meaning of this curious tongue and ponder its purpose, the language appears to shift in subtle but fantastic ways, remaking itself daily before your eyes. And just when you are poised to share your findings with the rest of the world, the entire thing vanishes.
-        
-        This fairly describes my roller coaster experience of curiosity, wonder and disappointment over the past few weeks, as I’ve worked alongside security researchers in an effort to understand how “lorem ipsum” — common placeholder text on countless Web sites — could be transformed into so many apparently geopolitical and startlingly modern phrases when translated from Latin to English using Google Translate. (If you have no idea what “lorem ipsum” is, skip ahead to a brief primer here)." />
+        android:layout_height="wrap_content" >
+    </ListView>
 
 </LinearLayout>
