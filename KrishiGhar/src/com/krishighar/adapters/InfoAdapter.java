@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.krishigar.justifiedtextview.utils.TextViewEx;
 import com.krishighar.R;
 import com.krishighar.models.Info;
 
@@ -41,7 +42,7 @@ public class InfoAdapter extends ArrayAdapter<Info> {
 			holder = new ViewHolder();
 			convertView = mInflater.inflate(R.layout.info_row, parent, false);
 			holder.tvTitle = (TextView) convertView.findViewById(R.id.tvTitle);
-			holder.tvInfo = (TextView) convertView.findViewById(R.id.tvInfo);
+			holder.tvInfo = (TextViewEx) convertView.findViewById(R.id.tvInfo);
 			holder.tvFrom = (TextView) convertView.findViewById(R.id.tvFrom);
 
 			convertView.setTag(holder);
@@ -49,7 +50,8 @@ public class InfoAdapter extends ArrayAdapter<Info> {
 			holder = (ViewHolder) convertView.getTag();
 		}
 		holder.tvTitle.setText(item.getTitle());
-		holder.tvInfo.setText(item.getBody());
+		holder.tvInfo.setText(item.getBody(),true);
+		//holder.tvInfo.setHyphenate(true, "*");
 		holder.tvFrom.setText("From: " + item.getFrom());
 
 		return convertView;
@@ -57,7 +59,7 @@ public class InfoAdapter extends ArrayAdapter<Info> {
 
 	class ViewHolder {
 		public TextView tvTitle;
-		public TextView tvInfo;
+		public TextViewEx tvInfo;
 		public TextView tvFrom;
 
 	}

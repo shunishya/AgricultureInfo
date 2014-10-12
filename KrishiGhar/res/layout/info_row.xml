@@ -2,6 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="10dp"
+    android:background="@drawable/card"
     android:orientation="vertical" >
 
     <TextView
@@ -9,16 +11,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="left"
-        android:padding="10dp" />
+        android:padding="10dp"
+        android:textStyle="bold" />
 
-    <TextView
+    <com.krishigar.justifiedtextview.utils.TextViewEx
         android:id="@+id/tvInfo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|right"
+        android:layout_gravity="center_vertical|center_horizontal"
         android:gravity="center"
         android:padding="10dp" >
-    </TextView>
+    </com.krishigar.justifiedtextview.utils.TextViewEx>
 
     <TextView
         android:id="@+id/tvFrom"

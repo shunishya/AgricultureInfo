@@ -977,10 +977,16 @@ containing a value of this type.
         public static final int abs__bright_foreground_disabled_holo_light=0x7f060005;
         public static final int abs__bright_foreground_holo_dark=0x7f060002;
         public static final int abs__bright_foreground_holo_light=0x7f060003;
-        public static final int abs__primary_text_disable_only_holo_dark=0x7f060017;
-        public static final int abs__primary_text_disable_only_holo_light=0x7f060018;
-        public static final int abs__primary_text_holo_dark=0x7f060019;
-        public static final int abs__primary_text_holo_light=0x7f06001a;
+        public static final int abs__primary_text_disable_only_holo_dark=0x7f06001c;
+        public static final int abs__primary_text_disable_only_holo_light=0x7f06001d;
+        public static final int abs__primary_text_holo_dark=0x7f06001e;
+        public static final int abs__primary_text_holo_light=0x7f06001f;
+        /**  card colors 
+         */
+        public static final int card_background=0x7f060018;
+        public static final int card_detailing=0x7f06001b;
+        public static final int card_shadow_1=0x7f060019;
+        public static final int card_shadow_2=0x7f06001a;
         public static final int default_circle_indicator_fill_color=0x7f06000e;
         public static final int default_circle_indicator_page_color=0x7f06000f;
         public static final int default_circle_indicator_stroke_color=0x7f060010;
@@ -990,6 +996,7 @@ containing a value of this type.
         public static final int default_title_indicator_selected_color=0x7f060014;
         public static final int default_title_indicator_text_color=0x7f060015;
         public static final int default_underline_indicator_selected_color=0x7f060016;
+        public static final int transparent=0x7f060017;
         public static final int vpi__background_holo_dark=0x7f060006;
         public static final int vpi__background_holo_light=0x7f060007;
         public static final int vpi__bright_foreground_disabled_holo_dark=0x7f06000a;
@@ -998,8 +1005,8 @@ containing a value of this type.
         public static final int vpi__bright_foreground_holo_light=0x7f060009;
         public static final int vpi__bright_foreground_inverse_holo_dark=0x7f06000c;
         public static final int vpi__bright_foreground_inverse_holo_light=0x7f06000d;
-        public static final int vpi__dark_theme=0x7f06001b;
-        public static final int vpi__light_theme=0x7f06001c;
+        public static final int vpi__dark_theme=0x7f060020;
+        public static final int vpi__light_theme=0x7f060021;
     }
     public static final class dimen {
         /**  Default height of an action bar. 
@@ -1225,16 +1232,17 @@ containing a value of this type.
         public static final int abs__textfield_searchview_right_holo_dark=0x7f02006d;
         public static final int abs__textfield_searchview_right_holo_light=0x7f02006e;
         public static final int abs__toast_frame=0x7f02006f;
-        public static final int ic_action_cancel=0x7f020070;
-        public static final int ic_action_done=0x7f020071;
-        public static final int ic_launcher=0x7f020072;
-        public static final int vpi__tab_indicator=0x7f020073;
-        public static final int vpi__tab_selected_focused_holo=0x7f020074;
-        public static final int vpi__tab_selected_holo=0x7f020075;
-        public static final int vpi__tab_selected_pressed_holo=0x7f020076;
-        public static final int vpi__tab_unselected_focused_holo=0x7f020077;
-        public static final int vpi__tab_unselected_holo=0x7f020078;
-        public static final int vpi__tab_unselected_pressed_holo=0x7f020079;
+        public static final int card=0x7f020070;
+        public static final int ic_action_cancel=0x7f020071;
+        public static final int ic_action_done=0x7f020072;
+        public static final int ic_launcher=0x7f020073;
+        public static final int vpi__tab_indicator=0x7f020074;
+        public static final int vpi__tab_selected_focused_holo=0x7f020075;
+        public static final int vpi__tab_selected_holo=0x7f020076;
+        public static final int vpi__tab_selected_pressed_holo=0x7f020077;
+        public static final int vpi__tab_unselected_focused_holo=0x7f020078;
+        public static final int vpi__tab_unselected_holo=0x7f020079;
+        public static final int vpi__tab_unselected_pressed_holo=0x7f02007a;
     }
     public static final class id {
         public static final int abs__action_bar=0x7f040025;
