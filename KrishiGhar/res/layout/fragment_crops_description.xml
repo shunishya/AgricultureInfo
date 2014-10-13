@@ -7,7 +7,10 @@
     <ListView
         android:id="@+id/lvInfo"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@android:color/darker_gray" >
     </ListView>
 
 </LinearLayout>
