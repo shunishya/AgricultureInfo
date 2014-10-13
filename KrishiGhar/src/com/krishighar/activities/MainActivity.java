@@ -16,8 +16,8 @@ import com.krishighar.api.models.BaseResponse;
 import com.krishighar.api.models.SubscribtionRequest;
 import com.krishighar.db.CropDbHelper;
 import com.krishighar.db.models.Crop;
+import com.krishighar.fragments.SplashFragment;
 import com.krishighar.fragments.SubsciptionCropsFragment;
-import com.krishighar.fragments.SubscriptionLocationFragment;
 import com.krishighar.gcm.GCMRegistration;
 import com.krishighar.utils.AgricultureInfoPreference;
 import com.krishighar.utils.DeviceUtils;
@@ -35,8 +35,7 @@ public class MainActivity extends SherlockFragmentActivity {
 		setContentView(R.layout.activity_main);
 		mPrefs = new AgricultureInfoPreference(MainActivity.this);
 		getSupportFragmentManager().beginTransaction()
-				.replace(R.id.container, new SubscriptionLocationFragment())
-				.commit();
+				.replace(R.id.container, new SplashFragment()).commit();
 	}
 
 	public void onLocationSelected(String locationName, int locationId) {

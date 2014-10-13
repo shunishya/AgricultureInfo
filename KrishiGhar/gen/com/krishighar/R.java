@@ -1339,13 +1339,14 @@ containing a value of this type.
         public static final int activity_main=0x7f030015;
         public static final int activity_register=0x7f030016;
         public static final int fragment_crops_description=0x7f030017;
-        public static final int gcm_main=0x7f030018;
-        public static final int info_row=0x7f030019;
-        public static final int layout_feed=0x7f03001a;
-        public static final int list_item_crop=0x7f03001b;
-        public static final int list_item_location=0x7f03001c;
-        public static final int sherlock_spinner_dropdown_item=0x7f03001d;
-        public static final int sherlock_spinner_item=0x7f03001e;
+        public static final int fragment_splash=0x7f030018;
+        public static final int gcm_main=0x7f030019;
+        public static final int info_row=0x7f03001a;
+        public static final int layout_feed=0x7f03001b;
+        public static final int list_item_crop=0x7f03001c;
+        public static final int list_item_location=0x7f03001d;
+        public static final int sherlock_spinner_dropdown_item=0x7f03001e;
+        public static final int sherlock_spinner_item=0x7f03001f;
     }
     public static final class menu {
         public static final int subscription_menu=0x7f0b0000;
