@@ -13,8 +13,9 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 public class KrishiGharBaseApi {
 	HttpClient client = new DefaultHttpClient();
-	public static String BASE_URL = "http://krishighar-friendsandfamily.rhcloud.com/agriApi/ws/";
+	public static String BASE_URL = "http://krishighar-friendsandfamily.rhcloud.com/ws/";
 
+	//public static String BASE_URL = "http://10.0.2.101:8081/ws/";
 	public static String GET_LOCATION_URL = BASE_URL + "location/pull";
 	public static String GET_CROPS_URL = BASE_URL
 			+ "locationCrop/pull";

@@ -17,15 +17,18 @@ import com.krishighar.api.KrishiGharApi;
 import com.krishighar.api.KrishiGharException;
 import com.krishighar.api.models.GetInfoRequest;
 import com.krishighar.api.models.InfoResponse;
+import com.krishighar.db.InfoDbHelper;
+import com.krishighar.db.models.Crop;
 import com.krishighar.models.Info;
 
 public class CropFragment extends SherlockFragment {
 	private ListView lvInfo;
-	private int cropsId;
+	private Crop crop;
+	private InfoDbHelper mInfoDbHelper;
 
-	public static CropFragment newInstance(int id) {
+	public static CropFragment newInstance(Crop id) {
 		CropFragment fragment = new CropFragment();
-		fragment.cropsId = id;
+		fragment.crop = id;
 		return fragment;
 	}
 
@@ -35,16 +38,17 @@ public class CropFragment extends SherlockFragment {
 		View rootView = inflater.inflate(R.layout.fragment_crops_description,
 				container, false);
 		lvInfo = (ListView) rootView.findViewById(R.id.lvInfo);
+		mInfoDbHelper = new InfoDbHelper(getSherlockActivity());
 		ArrayList<Info> infos = new ArrayList<Info>();
 		Info info = new Info();
 		info.setBody("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry&apos;s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.");
-		info.setTitle("Title" + cropsTag);
+		info.setTitle("Title");
 		info.setFrom("Subhash");
 		infos.add(info);
 		lvInfo.setAdapter(new InfoAdapter(getSherlockActivity(), infos));
 		lvInfo.setDivider(null);
 		GetInfoRequest request = new GetInfoRequest();
-		request.setCropId(cropsId);
+		request.setCropId(crop.getCropId());
 		request.setTimestamp(System.currentTimeMillis());
 		new GetCropInfo().execute(request);
 		return rootView;
@@ -70,6 +74,7 @@ public class CropFragment extends SherlockFragment {
 				InfoResponse response = (InfoResponse) result;
 				lvInfo.setAdapter(new InfoAdapter(getSherlockActivity(),
 						response.getInfos()));
+				mInfoDbHelper.addInfo(response.getInfos(), crop.getTag());
 			} else if (result instanceof KrishiGharException) {
 				Toast.makeText(getSherlockActivity(), "Please try again.",
 						Toast.LENGTH_SHORT).show();

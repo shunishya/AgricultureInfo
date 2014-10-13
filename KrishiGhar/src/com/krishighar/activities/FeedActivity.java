@@ -8,7 +8,7 @@ import android.support.v4.view.ViewPager;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.krishighar.R;
-import com.krishighar.adapters.CropsPagerAdapeter;
+import com.krishighar.adapters.CropsPagerAdapter;
 import com.krishighar.db.CropDbHelper;
 import com.krishighar.db.models.Crop;
 
@@ -25,7 +25,7 @@ public class FeedActivity extends SherlockFragmentActivity {
 		setContentView(R.layout.layout_feed);
 		mActionBar = getSupportActionBar();
 		crops = new CropDbHelper(this).getCrops();
-		FragmentPagerAdapter mPagerAdapter = new CropsPagerAdapeter(
+		FragmentPagerAdapter mPagerAdapter = new CropsPagerAdapter(
 				getSupportFragmentManager(), crops);
 		mPager = (ViewPager) findViewById(R.id.pager);
 		mPager.setOnPageChangeListener(onPageChangeListener);

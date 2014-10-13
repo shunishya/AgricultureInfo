@@ -7,6 +7,8 @@ import com.krishighar.db.DbConf;
 @DatabaseTable(tableName = DbConf.TABLE_INFO)
 public class InfoTable {
 
+	public static String TAG = "tag";
+
 	@DatabaseField
 	private String infoTitle;
 	@DatabaseField

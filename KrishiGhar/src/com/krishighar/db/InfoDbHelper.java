@@ -10,6 +10,7 @@ import com.krishighar.models.Info;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class InfoDbHelper {
 	private Dao<InfoTable, Integer> mDao;
@@ -22,6 +23,17 @@ public class InfoDbHelper {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public boolean isTableEmpty() {
+		try {
+			if (mDao.countOf() == 0) {
+				return true;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 	public void addInfo(ArrayList<Info> infos, String tag) {
@@ -54,6 +66,25 @@ public class InfoDbHelper {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public ArrayList<Info> getAllInfo(String tag) {
+		ArrayList<Info> infos = new ArrayList<Info>();
+		try {
+			List<InfoTable> cropInfo = mDao.queryBuilder().where()
+					.eq(InfoTable.TAG, tag).query();
+			for (InfoTable infoTable : cropInfo) {
+				Info info = new Info();
+				info.setBody(infoTable.getInfoBody());
+				info.setFrom(infoTable.getInfoFrom());
+				info.setTimestamp(infoTable.getTimestamp());
+				info.setTitle(infoTable.getInfoTitle());
+				infos.add(info);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return infos;
 	}
 
 }

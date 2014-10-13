@@ -8,12 +8,16 @@ import android.content.Intent;
 
 import com.google.android.gcm.GCMBaseIntentService;
 import com.google.android.gcm.GCMRegistrar;
+import com.krishighar.activities.FeedActivity;
 import com.krishighar.activities.MainActivity;
 import com.krishighar.activities.SendGCMId;
+import com.krishighar.api.models.PushedInfo;
+import com.krishighar.db.InfoDbHelper;
 import com.krishighar.gcm.AppUtil;
 import com.krishighar.gcm.Config;
 import com.krishighar.gcm.GCMMainActivity;
 import com.krishighar.utils.AgricultureInfoPreference;
+import com.krishighar.utils.JsonUtil;
 
 public class GCMIntentService extends GCMBaseIntentService {
 	private AppUtil appUtil = null;
@@ -70,19 +74,26 @@ public class GCMIntentService extends GCMBaseIntentService {
 		generateNotification(context, message);
 	}
 
+	@SuppressWarnings("deprecation")
 	private static void generateNotification(Context context, String message) {
 		int icon = R.drawable.ic_launcher;
 		long when = System.currentTimeMillis();
+		InfoDbHelper dbHelper = new InfoDbHelper(context);
+		PushedInfo info = (PushedInfo) JsonUtil.readJsonString(message,
+				PushedInfo.class);
+		dbHelper.addInfo(info);
 		NotificationManager notificationManager = (NotificationManager) context
 				.getSystemService(Context.NOTIFICATION_SERVICE);
-		Notification notification = new Notification(icon, message, when);
+		Notification notification = new Notification(icon, info.getInfoTitle(),
+				when);
 		String title = "KrishiGhar";
-		Intent notificationIntent = new Intent(context, GCMMainActivity.class);
+		Intent notificationIntent = new Intent(context, FeedActivity.class);
 		notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
 				| Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		PendingIntent intent = PendingIntent.getActivity(context, 0,
 				notificationIntent, 0);
-		notification.setLatestEventInfo(context, title, message, intent);
+		notification.setLatestEventInfo(context, title, info.getInfoBody(),
+				intent);
 		notification.flags |= Notification.FLAG_AUTO_CANCEL;
 		notification.defaults |= Notification.DEFAULT_SOUND;
 		notification.defaults |= Notification.DEFAULT_VIBRATE;
