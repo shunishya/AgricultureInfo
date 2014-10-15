@@ -23,7 +23,6 @@ public class GCMRegistration {
 					"Internet Connection Required.", false);
 			return;
 		}
-
 		GCMRegistrar.checkDevice(mContext);
 		GCMRegistrar.checkManifest(mContext);
 		final String regId = GCMRegistrar.getRegistrationId(mContext);

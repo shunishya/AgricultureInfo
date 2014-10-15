@@ -3,6 +3,7 @@ package com.krishighar.fragments;
 import java.util.ArrayList;
 
 import android.os.AsyncTask;
+import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +26,7 @@ public class CropFragment extends SherlockFragment {
 	private ListView lvInfo;
 	private Crop crop;
 	private InfoDbHelper mInfoDbHelper;
+	private AsyncTask<GetInfoRequest, Void, Object> getCropsInfo;
 
 	public static CropFragment newInstance(Crop id) {
 		CropFragment fragment = new CropFragment();
@@ -40,18 +42,21 @@ public class CropFragment extends SherlockFragment {
 		lvInfo = (ListView) rootView.findViewById(R.id.lvInfo);
 		mInfoDbHelper = new InfoDbHelper(getSherlockActivity());
 		ArrayList<Info> infos = new ArrayList<Info>();
-		Info info = new Info();
-		info.setBody("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry&apos;s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.");
-		info.setTitle("Title");
-		info.setFrom("Subhash");
-		infos.add(info);
 		lvInfo.setAdapter(new InfoAdapter(getSherlockActivity(), infos));
 		lvInfo.setDivider(null);
 		GetInfoRequest request = new GetInfoRequest();
 		request.setCropId(crop.getCropId());
 		request.setTimestamp(System.currentTimeMillis());
-		new GetCropInfo().execute(request);
+		getCropsInfo = new GetCropInfo();
+		getCropsInfo.execute(request);
 		return rootView;
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		if (getCropsInfo != null && getCropsInfo.getStatus() == Status.RUNNING)
+			getCropsInfo.cancel(true);
 	}
 
 	public class GetCropInfo extends AsyncTask<GetInfoRequest, Void, Object> {
@@ -74,7 +79,7 @@ public class CropFragment extends SherlockFragment {
 				InfoResponse response = (InfoResponse) result;
 				lvInfo.setAdapter(new InfoAdapter(getSherlockActivity(),
 						response.getInfos()));
-				mInfoDbHelper.addInfo(response.getInfos(), crop.getTag());
+				//mInfoDbHelper.addInfo(response.getInfos(), crop.getTag());
 			} else if (result instanceof KrishiGharException) {
 				Toast.makeText(getSherlockActivity(), "Please try again.",
 						Toast.LENGTH_SHORT).show();

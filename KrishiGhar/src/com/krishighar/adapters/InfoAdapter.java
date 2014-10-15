@@ -50,8 +50,9 @@ public class InfoAdapter extends ArrayAdapter<Info> {
 			holder = (ViewHolder) convertView.getTag();
 		}
 		holder.tvTitle.setText(item.getTitle());
-		holder.tvInfo.setText(item.getBody(),true);
-		//holder.tvInfo.setHyphenate(true, "*");
+		holder.tvInfo.setText(item.getBody(), true);
+		// holder.tvInfo.setHyphenate(true, "*");
+		// holder.tvInfo.setText(item.getBody());
 		holder.tvFrom.setText("From: " + item.getFrom());
 
 		return convertView;

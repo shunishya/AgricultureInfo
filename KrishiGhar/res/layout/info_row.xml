@@ -17,11 +17,20 @@
     <com.krishigar.justifiedtextview.utils.TextViewEx
         android:id="@+id/tvInfo"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+    </com.krishigar.justifiedtextview.utils.TextViewEx>
+
+    <!--
+    <TextView
+        android:id="@+id/tvInfo"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|center_horizontal"
         android:gravity="center"
-        android:padding="10dp" >
-    </com.krishigar.justifiedtextview.utils.TextViewEx>
+        android:padding="10dp"
+        android:scrollbars="vertical" >
+    </TextView>
+    -->
 
     <TextView
         android:id="@+id/tvFrom"

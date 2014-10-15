@@ -9,13 +9,11 @@ import android.content.Intent;
 import com.google.android.gcm.GCMBaseIntentService;
 import com.google.android.gcm.GCMRegistrar;
 import com.krishighar.activities.FeedActivity;
-import com.krishighar.activities.MainActivity;
 import com.krishighar.activities.SendGCMId;
 import com.krishighar.api.models.PushedInfo;
 import com.krishighar.db.InfoDbHelper;
 import com.krishighar.gcm.AppUtil;
 import com.krishighar.gcm.Config;
-import com.krishighar.gcm.GCMMainActivity;
 import com.krishighar.utils.AgricultureInfoPreference;
 import com.krishighar.utils.JsonUtil;
 

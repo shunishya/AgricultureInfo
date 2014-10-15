@@ -13,7 +13,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 public class KrishiGharBaseApi {
 	HttpClient client = new DefaultHttpClient();
-	public static String BASE_URL = "http://krishighar-friendsandfamily.rhcloud.com/ws/";
+	public static String BASE_URL = "http://krishighar-subhasha1.rhcloud.com/ws/";
 
 	//public static String BASE_URL = "http://10.0.2.101:8081/ws/";
 	public static String GET_LOCATION_URL = BASE_URL + "location/pull";
@@ -65,6 +65,8 @@ public class KrishiGharBaseApi {
 
 	public InputStream postData(String data, String url)
 			throws KrishiGharException {
+		
+		client.getParams().setBooleanParameter("http.protocol.expect-continue", false);
 		// Prepare a request object
 		HttpPost httpPost = new HttpPost(url);
 		InputStream instream;
