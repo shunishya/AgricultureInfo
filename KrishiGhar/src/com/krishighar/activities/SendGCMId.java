@@ -1,17 +1,26 @@
 package com.krishighar.activities;
 
-import com.google.android.gcm.GCMRegistrar;
-import com.krishighar.api.KrishiGharApi;
-import com.krishighar.api.KrishiGharException;
-import com.krishighar.api.models.BaseResponse;
-import com.krishighar.api.models.SendGCMRegistrationId;
-import com.krishighar.utils.DeviceUtils;
-
 import android.content.Context;
-import android.os.AsyncTask;
+import android.widget.Toast;
 
-public class SendGCMId {
+import com.android.volley.Request.Method;
+import com.android.volley.Response.ErrorListener;
+import com.android.volley.Response.Listener;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.google.android.gcm.GCMRegistrar;
+import com.krishighar.api.KrishiGharBaseApi;
+import com.krishighar.api.models.SendGCMRegistrationId;
+import com.krishighar.gcm.AppUtil;
+import com.krishighar.utils.DeviceUtils;
+import com.krishighar.utils.JsonUtil;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+public class SendGCMId implements Listener<JSONObject>, ErrorListener {
 	private Context mContext;
+	private String tag_json_obj = "json_obj_req_GCM";
 
 	public SendGCMId(Context context) {
 		this.mContext = context;
@@ -21,33 +30,27 @@ public class SendGCMId {
 		SendGCMRegistrationId request = new SendGCMRegistrationId();
 		request.setDeviceId(DeviceUtils.getUniqueDeviceID(mContext));
 		request.setRegId(GCMRegistrar.getRegistrationId(mContext));
-		new SendingGCMRegistrationId().execute(request);
+		JSONObject object = null;
+		try {
+			object = new JSONObject(JsonUtil.writeValue(request));
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		JsonObjectRequest jsonRequest = new JsonObjectRequest(Method.POST,
+				KrishiGharBaseApi.SEND_GCM_REGISTRATION_ID, object, this, this);
+		AppUtil.getInstance().addToRequestQueue(jsonRequest, tag_json_obj);
+
 	}
 
-	public class SendingGCMRegistrationId extends
-			AsyncTask<SendGCMRegistrationId, Void, Object> {
-		KrishiGharApi api = new KrishiGharApi(mContext);
+	@Override
+	public void onErrorResponse(VolleyError error) {
+		Toast.makeText(mContext, "Error:: please try again.",
+				Toast.LENGTH_SHORT).show();
+	}
 
-		@Override
-		protected Object doInBackground(SendGCMRegistrationId... params) {
-			try {
-				return api.sendGCMRegistrationId(params[0]);
-			} catch (KrishiGharException e) {
-				e.printStackTrace();
-				return e;
-			}
-		}
-
-		@Override
-		protected void onPostExecute(Object result) {
-			super.onPostExecute(result);
-			if (result instanceof BaseResponse) {
-
-			} else if (result instanceof KrishiGharException) {
-
-			}
-		}
-
+	@Override
+	public void onResponse(JSONObject response) {
+		Toast.makeText(mContext, "Success.", Toast.LENGTH_SHORT).show();
 	}
 
 }

@@ -1,7 +1,6 @@
 package com.krishighar.activities;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -9,25 +8,35 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.android.volley.Request.Method;
+import com.android.volley.Response.ErrorListener;
+import com.android.volley.Response.Listener;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.krishighar.R;
-import com.krishighar.api.KrishiGharApi;
-import com.krishighar.api.KrishiGharException;
-import com.krishighar.api.models.BaseResponse;
+import com.krishighar.api.KrishiGharBaseApi;
 import com.krishighar.api.models.SubscribtionRequest;
 import com.krishighar.db.CropDbHelper;
 import com.krishighar.db.models.Crop;
 import com.krishighar.fragments.SplashFragment;
 import com.krishighar.fragments.SubsciptionCropsFragment;
+import com.krishighar.gcm.AppUtil;
 import com.krishighar.gcm.GCMRegistration;
 import com.krishighar.utils.AgricultureInfoPreference;
 import com.krishighar.utils.DeviceUtils;
+import com.krishighar.utils.JsonUtil;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends SherlockFragmentActivity {
+public class MainActivity extends SherlockFragmentActivity implements
+		Listener<JSONObject>, ErrorListener {
 	boolean doneVisible;
 	private AgricultureInfoPreference mPrefs;
+	private String tag_json_obj = "json_obj_req_subscribe";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +74,12 @@ public class MainActivity extends SherlockFragmentActivity {
 	}
 
 	@Override
+	protected void onStop() {
+		super.onStop();
+		AppUtil.getInstance().getRequestQueue().cancelAll(tag_json_obj);
+	}
+
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.done_item) {
 			SubsciptionCropsFragment frag = (SubsciptionCropsFragment) getSupportFragmentManager()
@@ -89,7 +104,15 @@ public class MainActivity extends SherlockFragmentActivity {
 		request.setDeviceId(DeviceUtils.getUniqueDeviceID(this));
 		request.setLocationId(mPrefs.getLocationId());
 		request.setTags(tags);
-		new Subscription().execute(request);
+		JSONObject objectRequest = null;
+		try {
+			objectRequest = new JSONObject(JsonUtil.writeValue(request));
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		JsonObjectRequest jsonRequest = new JsonObjectRequest(Method.POST,
+				KrishiGharBaseApi.SUBSCRIBE_URL, objectRequest, this, this);
+		AppUtil.getInstance().addToRequestQueue(jsonRequest, tag_json_obj);
 		new CropDbHelper(this).addCrops(crops);
 	}
 
@@ -105,38 +128,18 @@ public class MainActivity extends SherlockFragmentActivity {
 		supportInvalidateOptionsMenu();
 	}
 
-	public class Subscription extends
-			AsyncTask<SubscribtionRequest, Void, Object> {
-		KrishiGharApi api = new KrishiGharApi(MainActivity.this);
+	@Override
+	public void onErrorResponse(VolleyError arg0) {
+		Toast.makeText(MainActivity.this, "Please try again later.",
+				Toast.LENGTH_SHORT).show();
 
-		@Override
-		protected Object doInBackground(SubscribtionRequest... params) {
-			try {
-				return api.subscribe(params[0]);
-			} catch (KrishiGharException e) {
-				e.printStackTrace();
-				return e;
-			}
-		}
+	}
 
-		@Override
-		protected void onPostExecute(Object result) {
-			super.onPostExecute(result);
-
-			if (result instanceof BaseResponse) {
-				BaseResponse response = (BaseResponse) result;
-				if (!response.isError()) {
-					GCMRegistration registration = new GCMRegistration(
-							MainActivity.this);
-					registration.getRegistrationId();
-					onSuccessfullSubcription();
-				}
-			} else if (result instanceof KrishiGharException) {
-				Toast.makeText(MainActivity.this, "Please try again later.",
-						Toast.LENGTH_SHORT).show();
-			}
-		}
-
+	@Override
+	public void onResponse(JSONObject arg0) {
+		GCMRegistration registration = new GCMRegistration(MainActivity.this);
+		registration.getRegistrationId();
+		onSuccessfullSubcription();
 	}
 
 }

@@ -7,8 +7,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.text.TextUtils;
 import android.util.Log;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gcm.GCMRegistrar;
 
 import java.io.IOException;
@@ -22,6 +26,46 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 public class AppUtil extends Application {
+
+	public static final String TAG = AppUtil.class.getSimpleName();
+
+	private RequestQueue mRequestQueue;
+	private static AppUtil mInstance;
+
+	@Override
+	public void onCreate() {
+		super.onCreate();
+		mInstance = this;
+	}
+
+	public static synchronized AppUtil getInstance() {
+		return mInstance;
+	}
+
+	public RequestQueue getRequestQueue() {
+		if (mRequestQueue == null) {
+			mRequestQueue = Volley.newRequestQueue(getApplicationContext());
+		}
+
+		return mRequestQueue;
+	}
+
+	public <T> void addToRequestQueue(Request<T> req, String tag) {
+		// set the default tag if tag is empty
+		req.setTag(TextUtils.isEmpty(tag) ? TAG : tag);
+		getRequestQueue().add(req);
+	}
+
+	public <T> void addToRequestQueue(Request<T> req) {
+		req.setTag(TAG);
+		getRequestQueue().add(req);
+	}
+
+	public void cancelPendingRequests(Object tag) {
+		if (mRequestQueue != null) {
+			mRequestQueue.cancelAll(tag);
+		}
+	}
 
 	void shareRegIdWithAppServer(final Context context, final String regId) {
 		String serverUrl = Config.APP_SERVER_URL + regId;

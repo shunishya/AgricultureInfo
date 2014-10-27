@@ -1,21 +1,31 @@
 package com.krishighar.fragments;
 
 import android.app.Activity;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockListFragment;
+import com.android.volley.Request.Method;
+import com.android.volley.Response.ErrorListener;
+import com.android.volley.Response.Listener;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.krishighar.activities.MainActivity;
 import com.krishighar.adapters.LocationAdapter;
-import com.krishighar.api.KrishiGharApi;
-import com.krishighar.api.KrishiGharException;
+import com.krishighar.api.KrishiGharBaseApi;
 import com.krishighar.api.models.GetLocationResponse;
+import com.krishighar.gcm.AppUtil;
 import com.krishighar.models.Location;
+import com.krishighar.utils.JsonUtil;
 
-public class SubscriptionLocationFragment extends SherlockListFragment {
+import org.json.JSONObject;
+
+public class SubscriptionLocationFragment extends SherlockListFragment
+		implements ErrorListener, Listener<JSONObject> {
+	// Tag used to cancel the request
+	String tag_json_obj = "json_obj_req";
 	private MainActivity mActivity;
 
 	@Override
@@ -23,7 +33,16 @@ public class SubscriptionLocationFragment extends SherlockListFragment {
 		super.onActivityCreated(savedInstanceState);
 
 		mActivity.getSupportActionBar().setTitle("Select Location");
-		new GetLocation().execute();
+		JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Method.GET,
+				KrishiGharBaseApi.GET_LOCATION_URL, null, this, this);
+		AppUtil.getInstance()
+				.addToRequestQueue(jsonObjectRequest, tag_json_obj);
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		AppUtil.getInstance().getRequestQueue().cancelAll(tag_json_obj);
 	}
 
 	@Override
@@ -43,31 +62,18 @@ public class SubscriptionLocationFragment extends SherlockListFragment {
 		mActivity.onLocationSelected(loc.getName(), loc.getId());
 	}
 
-	public class GetLocation extends AsyncTask<Void, Void, Object> {
-		KrishiGharApi api = new KrishiGharApi(getSherlockActivity());
+	@Override
+	public void onErrorResponse(VolleyError error) {
+		Toast.makeText(getSherlockActivity(), "Error:: please try again.",
+				Toast.LENGTH_SHORT).show();
 
-		@Override
-		protected Object doInBackground(Void... params) {
-			try {
-				return api.getLocation();
-			} catch (KrishiGharException e) {
-				e.printStackTrace();
-				return e;
-			}
-		}
+	}
 
-		@Override
-		protected void onPostExecute(Object result) {
-			super.onPostExecute(result);
-			if (result instanceof GetLocationResponse) {
-				GetLocationResponse response = (GetLocationResponse) result;
-				setListAdapter(new LocationAdapter(getSherlockActivity(),
-						response.getLocations()));
-			} else if (result instanceof KrishiGharException) {
-				Toast.makeText(getSherlockActivity(),
-						"Please try again later.", Toast.LENGTH_SHORT).show();
-			}
-		}
-
+	@Override
+	public void onResponse(JSONObject response) {
+		GetLocationResponse res = (GetLocationResponse) JsonUtil
+				.readJsonString(response.toString(), GetLocationResponse.class);
+		setListAdapter(new LocationAdapter(getSherlockActivity(),
+				res.getLocations()));
 	}
 }

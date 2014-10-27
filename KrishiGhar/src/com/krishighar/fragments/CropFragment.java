@@ -1,9 +1,5 @@
 package com.krishighar.fragments;
 
-import java.util.ArrayList;
-
-import android.os.AsyncTask;
-import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,21 +8,35 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
+import com.android.volley.Request.Method;
+import com.android.volley.Response.ErrorListener;
+import com.android.volley.Response.Listener;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.krishighar.R;
 import com.krishighar.adapters.InfoAdapter;
-import com.krishighar.api.KrishiGharApi;
-import com.krishighar.api.KrishiGharException;
+import com.krishighar.api.KrishiGharBaseApi;
 import com.krishighar.api.models.GetInfoRequest;
 import com.krishighar.api.models.InfoResponse;
 import com.krishighar.db.InfoDbHelper;
 import com.krishighar.db.models.Crop;
+import com.krishighar.gcm.AppUtil;
 import com.krishighar.models.Info;
+import com.krishighar.utils.JsonUtil;
 
-public class CropFragment extends SherlockFragment {
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+
+public class CropFragment extends SherlockFragment implements
+		Listener<JSONObject>, ErrorListener {
+
+	private String tag_json_obj = "json_obj_req_get_info";
+
 	private ListView lvInfo;
 	private Crop crop;
 	private InfoDbHelper mInfoDbHelper;
-	private AsyncTask<GetInfoRequest, Void, Object> getCropsInfo;
 
 	public static CropFragment newInstance(Crop id) {
 		CropFragment fragment = new CropFragment();
@@ -47,45 +57,36 @@ public class CropFragment extends SherlockFragment {
 		GetInfoRequest request = new GetInfoRequest();
 		request.setCropId(crop.getCropId());
 		request.setTimestamp(System.currentTimeMillis());
-		getCropsInfo = new GetCropInfo();
-		getCropsInfo.execute(request);
+		JSONObject objectRequest = null;
+		try {
+			objectRequest = new JSONObject(JsonUtil.writeValue(request));
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		JsonObjectRequest jsonRequest = new JsonObjectRequest(Method.POST,
+				KrishiGharBaseApi.GET_CROP_INFO_URL, objectRequest, this, this);
+		AppUtil.getInstance().addToRequestQueue(jsonRequest, tag_json_obj);
 		return rootView;
 	}
 
 	@Override
 	public void onStop() {
 		super.onStop();
-		if (getCropsInfo != null && getCropsInfo.getStatus() == Status.RUNNING)
-			getCropsInfo.cancel(true);
+		AppUtil.getInstance().getRequestQueue().cancelAll(tag_json_obj);
+
 	}
 
-	public class GetCropInfo extends AsyncTask<GetInfoRequest, Void, Object> {
-		KrishiGharApi api = new KrishiGharApi(getSherlockActivity());
+	@Override
+	public void onErrorResponse(VolleyError arg0) {
+		Toast.makeText(getSherlockActivity(), "Please try again.",
+				Toast.LENGTH_SHORT).show();
+	}
 
-		@Override
-		protected Object doInBackground(GetInfoRequest... params) {
-			try {
-				return api.getCropsInfo(params[0]);
-			} catch (KrishiGharException e) {
-				e.printStackTrace();
-				return e;
-			}
-		}
-
-		@Override
-		protected void onPostExecute(Object result) {
-			super.onPostExecute(result);
-			if (result instanceof InfoResponse) {
-				InfoResponse response = (InfoResponse) result;
-				lvInfo.setAdapter(new InfoAdapter(getSherlockActivity(),
-						response.getInfos()));
-				//mInfoDbHelper.addInfo(response.getInfos(), crop.getTag());
-			} else if (result instanceof KrishiGharException) {
-				Toast.makeText(getSherlockActivity(), "Please try again.",
-						Toast.LENGTH_SHORT).show();
-
-			}
-		}
-
+	@Override
+	public void onResponse(JSONObject response) {
+		InfoResponse res = (InfoResponse) JsonUtil.readJsonString(
+				response.toString(), InfoResponse.class);
+		lvInfo.setAdapter(new InfoAdapter(getSherlockActivity(), res.getInfos()));
+		// mInfoDbHelper.addInfo(response.getInfos(), crop.getTag());
 	}
 }

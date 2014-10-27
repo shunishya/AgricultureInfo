@@ -1,27 +1,38 @@
 package com.krishighar.fragments;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.Activity;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockListFragment;
+import com.android.volley.Request.Method;
+import com.android.volley.Response.ErrorListener;
+import com.android.volley.Response.Listener;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.krishighar.activities.MainActivity;
 import com.krishighar.adapters.CropsAdapter;
-import com.krishighar.api.KrishiGharApi;
-import com.krishighar.api.KrishiGharException;
+import com.krishighar.api.KrishiGharBaseApi;
 import com.krishighar.api.models.GetCropsRequest;
 import com.krishighar.api.models.GetCropsResponse;
 import com.krishighar.db.models.Crop;
+import com.krishighar.gcm.AppUtil;
 import com.krishighar.models.CropsListItem;
 import com.krishighar.utils.AgricultureInfoPreference;
+import com.krishighar.utils.JsonUtil;
 
-public class SubsciptionCropsFragment extends SherlockListFragment {
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class SubsciptionCropsFragment extends SherlockListFragment implements
+		Listener<JSONObject>, ErrorListener {
+
+	String tag_json_obj = "json_obj_req_crop";
 	private MainActivity mActivity;
 	private AgricultureInfoPreference mPref;
 
@@ -33,13 +44,27 @@ public class SubsciptionCropsFragment extends SherlockListFragment {
 		getSherlockActivity().getSupportActionBar().setTitle("Select Crops");
 		GetCropsRequest request = new GetCropsRequest();
 		request.setLocationId(mPref.getLocationId());
-		new GetCrops().execute(request);
+		JSONObject object = null;
+		try {
+			object = new JSONObject(JsonUtil.writeValue(request));
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		JsonObjectRequest jsonRequest = new JsonObjectRequest(Method.POST,
+				KrishiGharBaseApi.GET_CROPS_URL, object, this, this);
+		AppUtil.getInstance().addToRequestQueue(jsonRequest, tag_json_obj);
 	}
 
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		mActivity = (MainActivity) activity;
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		AppUtil.getInstance().getRequestQueue().cancelAll(tag_json_obj);
 	}
 
 	public static final String[] CROPS = { "Maize", "Rice", "Barley", "Beans",
@@ -88,31 +113,18 @@ public class SubsciptionCropsFragment extends SherlockListFragment {
 		return false;
 	}
 
-	public class GetCrops extends AsyncTask<GetCropsRequest, Void, Object> {
-		KrishiGharApi api = new KrishiGharApi(getSherlockActivity());
+	@Override
+	public void onErrorResponse(VolleyError error) {
+		Toast.makeText(getSherlockActivity(), "Please try again later.",
+				Toast.LENGTH_SHORT).show();
 
-		@Override
-		protected Object doInBackground(GetCropsRequest... params) {
-			try {
-				return api.getCrops(params[0]);
-			} catch (KrishiGharException e) {
-				e.printStackTrace();
-				return e;
-			}
-		}
+	}
 
-		@Override
-		protected void onPostExecute(Object result) {
-			super.onPostExecute(result);
-			if (result instanceof GetCropsResponse) {
-				GetCropsResponse response = (GetCropsResponse) result;
-				setListAdapter(new CropsAdapter(getSherlockActivity(),
-						getCropsItem(response.getCrops())));
-			} else if (result instanceof KrishiGharException) {
-				Toast.makeText(getSherlockActivity(),
-						"Please try again later.", Toast.LENGTH_SHORT).show();
-			}
-		}
-
+	@Override
+	public void onResponse(JSONObject response) {
+		GetCropsResponse res = (GetCropsResponse) JsonUtil.readJsonString(
+				response.toString(), GetCropsResponse.class);
+		setListAdapter(new CropsAdapter(getSherlockActivity(),
+				getCropsItem(res.getCrops())));
 	}
 }
