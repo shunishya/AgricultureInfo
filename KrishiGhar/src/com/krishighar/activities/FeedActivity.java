@@ -31,7 +31,11 @@ public class FeedActivity extends SherlockFragmentActivity {
 		mPager.setOnPageChangeListener(onPageChangeListener);
 		mPager.setAdapter(mPagerAdapter);
 		mPager.setCurrentItem(0);
-		addActionBarTabs();
+		if (crops.size() > 1) {
+			addActionBarTabs();
+		} else {
+			mActionBar.setTitle(crops.get(0).getCropName());
+		}
 	}
 
 	private ActionBar.TabListener tabListener = new ActionBar.TabListener() {
