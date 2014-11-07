@@ -11,6 +11,7 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import com.krishighar.db.models.Crop;
 import com.krishighar.db.models.InfoTable;
+import com.krishighar.db.models.InfoTag;
 
 public class DbHelper extends OrmLiteSqliteOpenHelper {
 	public DbHelper(Context context) {
@@ -23,6 +24,7 @@ public class DbHelper extends OrmLiteSqliteOpenHelper {
 		try {
 			TableUtils.createTable(connectionSource, Crop.class);
 			TableUtils.createTable(connectionSource, InfoTable.class);
+			TableUtils.createTable(connectionSource, InfoTag.class);
 		} catch (SQLException e) {
 			Log.e("DB_HELPER", "Unable to create datbases", e);
 		}
@@ -34,6 +36,7 @@ public class DbHelper extends OrmLiteSqliteOpenHelper {
 		try {
 			TableUtils.dropTable(connectionSource, Crop.class, true);
 			TableUtils.dropTable(connectionSource, InfoTable.class, true);
+			TableUtils.dropTable(connectionSource, InfoTag.class, true);
 			onCreate(sqliteDatabase, connectionSource);
 		} catch (SQLException e) {
 			Log.e("DB_HELPER", "Unable to upgrade database from version "

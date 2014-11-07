@@ -15,7 +15,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.krishighar.R;
 import com.krishighar.adapters.InfoAdapter;
-import com.krishighar.api.KrishiGharBaseApi;
+import com.krishighar.api.KrishiGharUrls;
 import com.krishighar.api.models.GetInfoRequest;
 import com.krishighar.api.models.InfoResponse;
 import com.krishighar.db.InfoDbHelper;
@@ -63,8 +63,10 @@ public class CropFragment extends SherlockFragment implements
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		JsonObjectRequest jsonRequest = new JsonObjectRequest(Method.POST,
-				KrishiGharBaseApi.GET_CROP_INFO_URL, objectRequest, this, this);
+		String url = KrishiGharUrls.GET_CROP_INFO_URL + crop.getTag()
+				+ "3536836863";
+		JsonObjectRequest jsonRequest = new JsonObjectRequest(Method.POST, url,
+				objectRequest, this, this);
 		AppUtil.getInstance().addToRequestQueue(jsonRequest, tag_json_obj);
 		return rootView;
 	}

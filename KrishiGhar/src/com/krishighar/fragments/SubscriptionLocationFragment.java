@@ -14,7 +14,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.krishighar.activities.MainActivity;
 import com.krishighar.adapters.LocationAdapter;
-import com.krishighar.api.KrishiGharBaseApi;
+import com.krishighar.api.KrishiGharUrls;
 import com.krishighar.api.models.GetLocationResponse;
 import com.krishighar.gcm.AppUtil;
 import com.krishighar.models.Location;
@@ -34,7 +34,7 @@ public class SubscriptionLocationFragment extends SherlockListFragment
 
 		mActivity.getSupportActionBar().setTitle("Select Location");
 		JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Method.GET,
-				KrishiGharBaseApi.GET_LOCATION_URL, null, this, this);
+				KrishiGharUrls.GET_LOCATION_URL, null, this, this);
 		AppUtil.getInstance()
 				.addToRequestQueue(jsonObjectRequest, tag_json_obj);
 	}
@@ -59,7 +59,7 @@ public class SubscriptionLocationFragment extends SherlockListFragment
 		super.onListItemClick(l, v, position, id);
 		LocationAdapter adapter = (LocationAdapter) getListAdapter();
 		Location loc = (Location) adapter.getItem(position);
-		mActivity.onLocationSelected(loc.getName(), loc.getId());
+		mActivity.onLocationSelected(loc.getNameEn(), loc.getId());
 	}
 
 	@Override

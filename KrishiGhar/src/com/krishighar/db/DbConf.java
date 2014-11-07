@@ -7,4 +7,5 @@ public class DbConf {
 
 	public static final String TABLE_SUBSCRIPTION_CROPS = "_subscribed_crops";
 	public static final String TABLE_INFO = "_info";
+	public static final String TABLE_INFO_TAG = "_info_tag";
 }

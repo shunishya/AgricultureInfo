@@ -9,7 +9,7 @@ import com.android.volley.Response.Listener;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gcm.GCMRegistrar;
-import com.krishighar.api.KrishiGharBaseApi;
+import com.krishighar.api.KrishiGharUrls;
 import com.krishighar.api.models.SendGCMRegistrationId;
 import com.krishighar.gcm.AppUtil;
 import com.krishighar.utils.DeviceUtils;
@@ -37,7 +37,7 @@ public class SendGCMId implements Listener<JSONObject>, ErrorListener {
 			e.printStackTrace();
 		}
 		JsonObjectRequest jsonRequest = new JsonObjectRequest(Method.POST,
-				KrishiGharBaseApi.SEND_GCM_REGISTRATION_ID, object, this, this);
+				KrishiGharUrls.SEND_GCM_REGISTRATION_ID, object, this, this);
 		AppUtil.getInstance().addToRequestQueue(jsonRequest, tag_json_obj);
 
 	}
