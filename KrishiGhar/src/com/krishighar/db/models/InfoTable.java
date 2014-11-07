@@ -7,49 +7,61 @@ import com.krishighar.db.DbConf;
 @DatabaseTable(tableName = DbConf.TABLE_INFO)
 public class InfoTable {
 
-	public static String TAG = "tag";
+	public static String COLUMN_ID = "infoId";
 
 	@DatabaseField
-	private String infoTitle;
+	private String titleEn;
 	@DatabaseField
-	private String infoBody;
-	@DatabaseField
-	private String tag;
+	private String bodyEn;
 	@DatabaseField
 	private long timestamp;
 	@DatabaseField
-	private String infoFrom;
+	private String from;
+	@DatabaseField
+	private String titleNp;
+	@DatabaseField
+	private String bodyNp;
+	@DatabaseField(id = true)
+	private int id;
 
-	public String getInfoFrom() {
-		return infoFrom;
+	public String getTitleEn() {
+		return titleEn;
 	}
 
-	public void setInfoFrom(String infoFrom) {
-		this.infoFrom = infoFrom;
+	public void setTitleEn(String titleEn) {
+		this.titleEn = titleEn;
 	}
 
-	public String getInfoTitle() {
-		return infoTitle;
+	public String getBodyEn() {
+		return bodyEn;
 	}
 
-	public void setInfoTitle(String infoTitle) {
-		this.infoTitle = infoTitle;
+	public void setBodyEn(String bodyEn) {
+		this.bodyEn = bodyEn;
 	}
 
-	public String getInfoBody() {
-		return infoBody;
+	public String getFrom() {
+		return from;
 	}
 
-	public void setInfoBody(String infoBody) {
-		this.infoBody = infoBody;
+	public void setFrom(String from) {
+		this.from = from;
 	}
 
-	public String getTag() {
-		return tag;
+	public String getTitleNp() {
+		return titleNp;
 	}
 
-	public void setTag(String tag) {
-		this.tag = tag;
+	public void setTitleNp(String titleNp) {
+		this.titleNp = titleNp;
+	}
+
+	public String getBodyNp() {
+		return bodyNp;
+	}
+
+	public void setBodyNp(String bodyNp) {
+		this.bodyNp = bodyNp;
 	}
 
 	public long getTimestamp() {
@@ -58,5 +70,13 @@ public class InfoTable {
 
 	public void setTimestamp(long timestamp) {
 		this.timestamp = timestamp;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 }

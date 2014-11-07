@@ -14,8 +14,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.krishighar.activities.MainActivity;
 import com.krishighar.adapters.CropsAdapter;
-import com.krishighar.api.KrishiGharBaseApi;
-import com.krishighar.api.models.GetCropsRequest;
+import com.krishighar.api.KrishiGharUrls;
 import com.krishighar.api.models.GetCropsResponse;
 import com.krishighar.db.models.Crop;
 import com.krishighar.gcm.AppUtil;
@@ -23,7 +22,6 @@ import com.krishighar.models.CropsListItem;
 import com.krishighar.utils.AgricultureInfoPreference;
 import com.krishighar.utils.JsonUtil;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -42,16 +40,9 @@ public class SubsciptionCropsFragment extends SherlockListFragment implements
 		mPref = new AgricultureInfoPreference(getSherlockActivity());
 
 		getSherlockActivity().getSupportActionBar().setTitle("Select Crops");
-		GetCropsRequest request = new GetCropsRequest();
-		request.setLocationId(mPref.getLocationId());
-		JSONObject object = null;
-		try {
-			object = new JSONObject(JsonUtil.writeValue(request));
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		JsonObjectRequest jsonRequest = new JsonObjectRequest(Method.POST,
-				KrishiGharBaseApi.GET_CROPS_URL, object, this, this);
+		String url = KrishiGharUrls.GET_CROPS_URL + mPref.getLocationId();
+		JsonObjectRequest jsonRequest = new JsonObjectRequest(Method.GET, url,
+				null, this, this);
 		AppUtil.getInstance().addToRequestQueue(jsonRequest, tag_json_obj);
 	}
 

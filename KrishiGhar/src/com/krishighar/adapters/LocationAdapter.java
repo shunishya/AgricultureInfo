@@ -35,7 +35,7 @@ public class LocationAdapter extends ArrayAdapter<Location> {
 		} else {
 			holder = (ViewHolder) convertView.getTag();
 		}
-		holder.tvLocation.setText(item.getName());
+		holder.tvLocation.setText(item.getNameEn());
 
 		return convertView;
 	}

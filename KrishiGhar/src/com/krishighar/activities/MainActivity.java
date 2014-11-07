@@ -14,7 +14,7 @@ import com.android.volley.Response.Listener;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.krishighar.R;
-import com.krishighar.api.KrishiGharBaseApi;
+import com.krishighar.api.KrishiGharUrls;
 import com.krishighar.api.models.SubscribtionRequest;
 import com.krishighar.db.CropDbHelper;
 import com.krishighar.db.models.Crop;
@@ -102,7 +102,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 		}
 		SubscribtionRequest request = new SubscribtionRequest();
 		request.setDeviceId(DeviceUtils.getUniqueDeviceID(this));
-		request.setLocationId(mPrefs.getLocationId());
+		request.setPhoneNumber(DeviceUtils.getPhoneNumber(this));
 		request.setTags(tags);
 		JSONObject objectRequest = null;
 		try {
@@ -110,8 +110,8 @@ public class MainActivity extends SherlockFragmentActivity implements
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		JsonObjectRequest jsonRequest = new JsonObjectRequest(Method.POST,
-				KrishiGharBaseApi.SUBSCRIBE_URL, objectRequest, this, this);
+		JsonObjectRequest jsonRequest = new JsonObjectRequest(Method.PUT,
+				KrishiGharUrls.SUBSCRIBE_URL, objectRequest, this, this);
 		AppUtil.getInstance().addToRequestQueue(jsonRequest, tag_json_obj);
 		new CropDbHelper(this).addCrops(crops);
 	}

@@ -4,8 +4,6 @@ import android.content.Context;
 import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
 
-import java.util.Locale;
-
 /**
  * Utility class for accessing various device features such as device id,
  * telephone number etc.
@@ -29,7 +27,12 @@ public class DeviceUtils {
 		if (identifier == null || identifier.length() == 0)
 			identifier = Secure.getString(context.getContentResolver(),
 					Secure.ANDROID_ID);
-		// identifier = identifier + Math.round(100);
 		return identifier;
+	}
+
+	public static String getPhoneNumber(Context context) {
+		TelephonyManager tMgr = (TelephonyManager) context
+				.getSystemService(Context.TELEPHONY_SERVICE);
+		return tMgr.getLine1Number();
 	}
 }
