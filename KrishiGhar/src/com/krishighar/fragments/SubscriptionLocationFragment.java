@@ -13,6 +13,7 @@ import com.android.volley.Response.Listener;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.krishighar.activities.MainActivity;
+import com.krishighar.activities.Settings;
 import com.krishighar.adapters.LocationAdapter;
 import com.krishighar.api.KrishiGharUrls;
 import com.krishighar.api.models.GetLocationResponse;
@@ -30,13 +31,14 @@ public class SubscriptionLocationFragment extends SherlockListFragment
 	String tag_json_obj = "json_obj_req";
 	private AgricultureInfoPreference mPrefs;
 	private MainActivity mActivity;
+	private Settings mSetting;
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
-		mPrefs = new AgricultureInfoPreference(mActivity);
-		mActivity.getSupportActionBar().setTitle(
+		mPrefs = new AgricultureInfoPreference(getSherlockActivity());
+		getSherlockActivity().getSupportActionBar().setTitle(
 				StringHelper.getLocationFragTitle(mPrefs.getLanguage()));
 		JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Method.GET,
 				KrishiGharUrls.GET_LOCATION_URL, null, this, this);
@@ -53,7 +55,11 @@ public class SubscriptionLocationFragment extends SherlockListFragment
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		mActivity = (MainActivity) activity;
+		if (activity instanceof MainActivity) {
+			mActivity = (MainActivity) activity;
+		} else {
+			mSetting = (Settings) activity;
+		}
 	}
 
 	@Override
@@ -61,7 +67,11 @@ public class SubscriptionLocationFragment extends SherlockListFragment
 		super.onListItemClick(l, v, position, id);
 		LocationAdapter adapter = (LocationAdapter) getListAdapter();
 		Location loc = (Location) adapter.getItem(position);
-		mActivity.onLocationSelected(loc.getNameEn(), loc.getId());
+		if (mActivity != null) {
+			mActivity.onLocationSelected(loc.getNameEn(), loc.getId());
+		} else {
+			mSetting.onLocationSelected(loc.getNameEn(), loc.getId());
+		}
 	}
 
 	@Override

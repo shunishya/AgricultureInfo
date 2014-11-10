@@ -1309,7 +1309,7 @@ containing a value of this type.
         public static final int dbinspector_table_layout=0x7f080043;
         public static final int dbinspector_text_current_page=0x7f08003f;
         public static final int disableHome=0x7f080009;
-        public static final int done_item=0x7f08004f;
+        public static final int done_item=0x7f080050;
         public static final int edit_query=0x7f08002b;
         public static final int homeAsUp=0x7f080006;
         public static final int ivCropCheck=0x7f08004b;
@@ -1319,6 +1319,7 @@ containing a value of this type.
         public static final int none=0x7f080010;
         public static final int normal=0x7f080001;
         public static final int pager=0x7f080049;
+        public static final int settings=0x7f08004f;
         public static final int showCustom=0x7f080008;
         public static final int showDb=0x7f08004e;
         public static final int showHome=0x7f080005;

@@ -4,7 +4,9 @@ import android.content.Context;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.table.TableUtils;
 import com.krishighar.api.models.PushedInfo;
+import com.krishighar.db.models.Crop;
 import com.krishighar.db.models.InfoTable;
 import com.krishighar.db.models.InfoTag;
 import com.krishighar.models.Info;
@@ -37,6 +39,17 @@ public class InfoDbHelper {
 			e.printStackTrace();
 		}
 		return false;
+	}
+
+	public void clearTable() {
+		try {
+			TableUtils.clearTable(mDao.getConnectionSource(), InfoTable.class);
+			TableUtils.clearTable(mInfoTagDao.getConnectionSource(),
+					InfoTag.class);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void addInfo(ArrayList<Info> infos, String tag) {

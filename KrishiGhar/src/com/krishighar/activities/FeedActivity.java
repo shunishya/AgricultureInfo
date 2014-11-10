@@ -126,6 +126,9 @@ public class FeedActivity extends SherlockFragmentActivity {
 		case R.id.showDb:
 			startActivity(new Intent(this, DbInspectorActivity.class));
 			break;
+		case R.id.settings:
+			startActivity(new Intent(this, Settings.class));
+			finish();
 		default:
 			break;
 		}

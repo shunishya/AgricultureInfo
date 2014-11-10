@@ -383,7 +383,7 @@ int id dbinspector_scrollview_table 0x7f080042
 int id dbinspector_table_layout 0x7f080043
 int id dbinspector_text_current_page 0x7f08003f
 int id disableHome 0x7f080009
-int id done_item 0x7f08004f
+int id done_item 0x7f080050
 int id edit_query 0x7f08002b
 int id homeAsUp 0x7f080006
 int id ivCropCheck 0x7f08004b
@@ -393,6 +393,7 @@ int id lvInfo 0x7f080044
 int id none 0x7f080010
 int id normal 0x7f080001
 int id pager 0x7f080049
+int id settings 0x7f08004f
 int id showCustom 0x7f080008
 int id showDb 0x7f08004e
 int id showHome 0x7f080005

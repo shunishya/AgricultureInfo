@@ -24,6 +24,15 @@ public class CropDbHelper {
 		}
 	}
 
+	public void clearTable() {
+		try {
+			TableUtils.clearTable(mDao.getConnectionSource(), Crop.class);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 	public void addCrops(List<Crop> crops) {
 		try {
 			TableUtils.clearTable(mDao.getConnectionSource(), Crop.class);
