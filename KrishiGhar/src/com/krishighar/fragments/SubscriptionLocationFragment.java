@@ -18,7 +18,9 @@ import com.krishighar.api.KrishiGharUrls;
 import com.krishighar.api.models.GetLocationResponse;
 import com.krishighar.gcm.AppUtil;
 import com.krishighar.models.Location;
+import com.krishighar.utils.AgricultureInfoPreference;
 import com.krishighar.utils.JsonUtil;
+import com.krishighar.utils.StringHelper;
 
 import org.json.JSONObject;
 
@@ -26,13 +28,16 @@ public class SubscriptionLocationFragment extends SherlockListFragment
 		implements ErrorListener, Listener<JSONObject> {
 	// Tag used to cancel the request
 	String tag_json_obj = "json_obj_req";
+	private AgricultureInfoPreference mPrefs;
 	private MainActivity mActivity;
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
-		mActivity.getSupportActionBar().setTitle("Select Location");
+		mPrefs = new AgricultureInfoPreference(mActivity);
+		mActivity.getSupportActionBar().setTitle(
+				StringHelper.getLocationFragTitle(mPrefs.getLanguage()));
 		JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Method.GET,
 				KrishiGharUrls.GET_LOCATION_URL, null, this, this);
 		AppUtil.getInstance()
@@ -50,9 +55,6 @@ public class SubscriptionLocationFragment extends SherlockListFragment
 		super.onAttach(activity);
 		mActivity = (MainActivity) activity;
 	}
-
-	public static final String[] LOCATION = { "लालितप�?र", "ध�?लिखेल", "बनेपा",
-			"ब�?टबल", "दाङ", "इलाम" };
 
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {

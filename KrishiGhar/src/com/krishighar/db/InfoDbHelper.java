@@ -40,9 +40,10 @@ public class InfoDbHelper {
 	}
 
 	public void addInfo(ArrayList<Info> infos, String tag) {
-		InfoTable row = new InfoTable();
-		InfoTag infoTagRow = new InfoTag();
+
 		for (Info info : infos) {
+			InfoTable row = new InfoTable();
+			InfoTag infoTagRow = new InfoTag();
 			row.setBodyEn(info.getBodyEn());
 			row.setBodyNp(info.getBodyNp());
 			row.setFrom(info.getFrom());
@@ -50,7 +51,7 @@ public class InfoDbHelper {
 			row.setTitleEn(info.getTitleEn());
 			row.setTitleNp(info.getTitleNp());
 			row.setId(info.getId());
-			infoTagRow.setId(info.getId());
+			infoTagRow.setInfo_id(info.getId());
 			infoTagRow.setTag(tag);
 			try {
 				mDao.createOrUpdate(row);

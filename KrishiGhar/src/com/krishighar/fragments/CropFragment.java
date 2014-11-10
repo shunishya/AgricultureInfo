@@ -1,5 +1,9 @@
 package com.krishighar.fragments;
 
+import java.util.ArrayList;
+
+import org.json.JSONObject;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,18 +20,12 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.krishighar.R;
 import com.krishighar.adapters.InfoAdapter;
 import com.krishighar.api.KrishiGharUrls;
-import com.krishighar.api.models.GetInfoRequest;
 import com.krishighar.api.models.InfoResponse;
 import com.krishighar.db.InfoDbHelper;
 import com.krishighar.db.models.Crop;
 import com.krishighar.gcm.AppUtil;
 import com.krishighar.models.Info;
 import com.krishighar.utils.JsonUtil;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
 
 public class CropFragment extends SherlockFragment implements
 		Listener<JSONObject>, ErrorListener {
@@ -54,20 +52,16 @@ public class CropFragment extends SherlockFragment implements
 		ArrayList<Info> infos = new ArrayList<Info>();
 		lvInfo.setAdapter(new InfoAdapter(getSherlockActivity(), infos));
 		lvInfo.setDivider(null);
-		GetInfoRequest request = new GetInfoRequest();
-		request.setCropId(crop.getCropId());
-		request.setTimestamp(System.currentTimeMillis());
-		JSONObject objectRequest = null;
-		try {
-			objectRequest = new JSONObject(JsonUtil.writeValue(request));
-		} catch (JSONException e) {
-			e.printStackTrace();
+		String url = KrishiGharUrls.GET_CROP_INFO_URL + crop.getTag() + "/"
+				+ System.currentTimeMillis() + "";
+		if (mInfoDbHelper.isTableEmpty()) {
+			JsonObjectRequest jsonRequest = new JsonObjectRequest(Method.GET,
+					url, null, this, this);
+			AppUtil.getInstance().addToRequestQueue(jsonRequest, tag_json_obj);
+		} else {
+			lvInfo.setAdapter(new InfoAdapter(getSherlockActivity(),
+					mInfoDbHelper.getAllInfo(crop.getTag())));
 		}
-		String url = KrishiGharUrls.GET_CROP_INFO_URL + crop.getTag()
-				+ "3536836863";
-		JsonObjectRequest jsonRequest = new JsonObjectRequest(Method.POST, url,
-				objectRequest, this, this);
-		AppUtil.getInstance().addToRequestQueue(jsonRequest, tag_json_obj);
 		return rootView;
 	}
 
@@ -89,6 +83,6 @@ public class CropFragment extends SherlockFragment implements
 		InfoResponse res = (InfoResponse) JsonUtil.readJsonString(
 				response.toString(), InfoResponse.class);
 		lvInfo.setAdapter(new InfoAdapter(getSherlockActivity(), res.getInfos()));
-		// mInfoDbHelper.addInfo(response.getInfos(), crop.getTag());
+		mInfoDbHelper.addInfo(res.getInfos(), crop.getTag());
 	}
 }

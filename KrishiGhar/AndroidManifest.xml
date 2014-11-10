@@ -32,7 +32,7 @@
 
     <!-- Permission to vibrate -->
     <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
         android:name="com.krishighar.gcm.AppUtil"
@@ -66,6 +66,10 @@
 
                 <data android:scheme="com.idrivecare.familypro" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name="im.dino.dbinspector.activities.DbInspectorActivity"
+            android:label="Example DbInspector" >
         </activity>
 
         <receiver

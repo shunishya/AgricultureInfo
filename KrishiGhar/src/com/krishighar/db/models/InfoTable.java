@@ -7,7 +7,7 @@ import com.krishighar.db.DbConf;
 @DatabaseTable(tableName = DbConf.TABLE_INFO)
 public class InfoTable {
 
-	public static String COLUMN_ID = "infoId";
+	public static String COLUMN_ID = "id";
 
 	@DatabaseField
 	private String titleEn;

@@ -36,6 +36,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 		Listener<JSONObject>, ErrorListener {
 	boolean doneVisible;
 	private AgricultureInfoPreference mPrefs;
+	private ArrayList<Crop> crops;
 	private String tag_json_obj = "json_obj_req_subscribe";
 
 	@Override
@@ -95,28 +96,32 @@ public class MainActivity extends SherlockFragmentActivity implements
 			Toast.makeText(this, "No crops Selected", Toast.LENGTH_LONG).show();
 		} else if (crops.isEmpty()) {
 			Toast.makeText(this, "No crops Selected", Toast.LENGTH_LONG).show();
+		} else {
+			this.crops = (ArrayList<Crop>) crops;
+			ArrayList<String> tags = new ArrayList<String>();
+			for (Crop crop : crops) {
+				tags.add(crop.getTag());
+			}
+			mPrefs.setDeviceId(DeviceUtils.getUniqueDeviceID(this));
+			SubscribtionRequest request = new SubscribtionRequest();
+			request.setDeviceId(mPrefs.getDeviceId());
+			request.setPhoneNumber(DeviceUtils.getPhoneNumber(this));
+			request.setTags(tags);
+			JSONObject objectRequest = null;
+			try {
+				objectRequest = new JSONObject(JsonUtil.writeValue(request));
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			JsonObjectRequest jsonRequest = new JsonObjectRequest(Method.PUT,
+					KrishiGharUrls.SUBSCRIBE_URL, objectRequest, this, this);
+			AppUtil.getInstance().addToRequestQueue(jsonRequest, tag_json_obj);
 		}
-		ArrayList<String> tags = new ArrayList<String>();
-		for (Crop crop : crops) {
-			tags.add(crop.getTag());
-		}
-		SubscribtionRequest request = new SubscribtionRequest();
-		request.setDeviceId(DeviceUtils.getUniqueDeviceID(this));
-		request.setPhoneNumber(DeviceUtils.getPhoneNumber(this));
-		request.setTags(tags);
-		JSONObject objectRequest = null;
-		try {
-			objectRequest = new JSONObject(JsonUtil.writeValue(request));
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		JsonObjectRequest jsonRequest = new JsonObjectRequest(Method.PUT,
-				KrishiGharUrls.SUBSCRIBE_URL, objectRequest, this, this);
-		AppUtil.getInstance().addToRequestQueue(jsonRequest, tag_json_obj);
-		new CropDbHelper(this).addCrops(crops);
+
 	}
 
 	public void onSuccessfullSubcription() {
+		new SendGCMId(this).sendId();
 		startActivity(new Intent(this, FeedActivity.class));
 		finish();
 	}
@@ -139,6 +144,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 	public void onResponse(JSONObject arg0) {
 		GCMRegistration registration = new GCMRegistration(MainActivity.this);
 		registration.getRegistrationId();
+		new CropDbHelper(this).addCrops(crops);
 		onSuccessfullSubcription();
 	}
 

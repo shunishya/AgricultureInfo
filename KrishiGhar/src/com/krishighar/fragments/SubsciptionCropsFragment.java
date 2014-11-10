@@ -21,6 +21,7 @@ import com.krishighar.gcm.AppUtil;
 import com.krishighar.models.CropsListItem;
 import com.krishighar.utils.AgricultureInfoPreference;
 import com.krishighar.utils.JsonUtil;
+import com.krishighar.utils.StringHelper;
 
 import org.json.JSONObject;
 
@@ -39,7 +40,8 @@ public class SubsciptionCropsFragment extends SherlockListFragment implements
 		super.onActivityCreated(savedInstanceState);
 		mPref = new AgricultureInfoPreference(getSherlockActivity());
 
-		getSherlockActivity().getSupportActionBar().setTitle("Select Crops");
+		getSherlockActivity().getSupportActionBar().setTitle(
+				StringHelper.getCropdFragTitle(mPref.getLanguage()));
 		String url = KrishiGharUrls.GET_CROPS_URL + mPref.getLocationId();
 		JsonObjectRequest jsonRequest = new JsonObjectRequest(Method.GET, url,
 				null, this, this);

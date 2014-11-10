@@ -9,16 +9,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.krishighar.R;
+import com.krishighar.fragments.LanguageChooseFrag;
 import com.krishighar.models.CropsListItem;
+import com.krishighar.utils.AgricultureInfoPreference;
 
 import java.util.List;
 
 public class CropsAdapter extends ArrayAdapter<CropsListItem> {
 	private LayoutInflater mInflater;
+	private AgricultureInfoPreference mPrefs;
 
 	public CropsAdapter(Context context, List<CropsListItem> objects) {
 		super(context, R.id.tvCrop, objects);
 		mInflater = LayoutInflater.from(context);
+		mPrefs = new AgricultureInfoPreference(context);
 	}
 
 	@Override
@@ -36,7 +40,11 @@ public class CropsAdapter extends ArrayAdapter<CropsListItem> {
 		} else {
 			holder = (ViewHolder) convertView.getTag();
 		}
-		holder.tvCropName.setText(item.getCrop().getNameEn());
+		if (mPrefs.getLanguage() == LanguageChooseFrag.ENGLISH) {
+			holder.tvCropName.setText(item.getCrop().getNameEn());
+		} else {
+			holder.tvCropName.setText(item.getCrop().getNameNp());
+		}
 		if (item.isChecked()) {
 			holder.ivChecked.setVisibility(View.VISIBLE);
 		} else {
