@@ -1,29 +1,27 @@
 package com.krishighar.db;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.Context;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.table.TableUtils;
 import com.krishighar.api.models.PushedInfo;
-import com.krishighar.db.models.Crop;
-import com.krishighar.db.models.InfoTable;
+import com.krishighar.db.models.Info;
 import com.krishighar.db.models.InfoTag;
-import com.krishighar.models.Info;
-
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class InfoDbHelper {
-	private Dao<InfoTable, Integer> mDao;
+	private Dao<Info, Integer> mDao;
 	private Dao<InfoTag, Integer> mInfoTagDao;
 
 	public InfoDbHelper(Context ctx) {
 		DbHelper dbHelper = (DbHelper) OpenHelperManager.getHelper(ctx,
 				DbHelper.class);
 		try {
-			this.mDao = dbHelper.getDao(InfoTable.class);
+			this.mDao = dbHelper.getDao(Info.class);
 			this.mInfoTagDao = dbHelper.getDao(InfoTag.class);
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -43,7 +41,7 @@ public class InfoDbHelper {
 
 	public void clearTable() {
 		try {
-			TableUtils.clearTable(mDao.getConnectionSource(), InfoTable.class);
+			TableUtils.clearTable(mDao.getConnectionSource(), Info.class);
 			TableUtils.clearTable(mInfoTagDao.getConnectionSource(),
 					InfoTag.class);
 		} catch (SQLException e) {
@@ -55,19 +53,11 @@ public class InfoDbHelper {
 	public void addInfo(ArrayList<Info> infos, String tag) {
 
 		for (Info info : infos) {
-			InfoTable row = new InfoTable();
 			InfoTag infoTagRow = new InfoTag();
-			row.setBodyEn(info.getBodyEn());
-			row.setBodyNp(info.getBodyNp());
-			row.setFrom(info.getFrom());
-			row.setTimestamp(info.getTimestamp());
-			row.setTitleEn(info.getTitleEn());
-			row.setTitleNp(info.getTitleNp());
-			row.setId(info.getId());
 			infoTagRow.setInfo_id(info.getId());
 			infoTagRow.setTag(tag);
 			try {
-				mDao.createOrUpdate(row);
+				mDao.createOrUpdate(info);
 				mInfoTagDao.createOrUpdate(infoTagRow);
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -76,10 +66,19 @@ public class InfoDbHelper {
 	}
 
 	public void addInfo(PushedInfo gcmPushedInfo) {
-		InfoTable row = new InfoTable();
-		InfoTag infoTagRow = new InfoTag();
-		for (String tag : gcmPushedInfo.getTags()) {
+		Info row = new Info();
+		Info info = gcmPushedInfo.getInfo();
+		row.setBodyEn(info.getBodyEn());
+		row.setBodyNp(info.getBodyNp());
+		row.setFrom(info.getFrom());
+		row.setId(info.getId());
+		row.setTimestamp(info.getTimestamp());
+		row.setTitleEn(info.getTitleEn());
+		row.setTitleNp(info.getTitleNp());
 
+		for (String tag : gcmPushedInfo.getTags()) {
+			InfoTag infoTagRow = new InfoTag();
+			infoTagRow.setId(info.getId());
 			infoTagRow.setTag(tag);
 			try {
 				mDao.createOrUpdate(row);
@@ -92,14 +91,14 @@ public class InfoDbHelper {
 
 	public ArrayList<Info> getAllInfo(String tag) {
 		ArrayList<Info> infos = new ArrayList<Info>();
-		List<InfoTable> cropInfo = new ArrayList<InfoTable>();
+		List<Info> cropInfo = new ArrayList<Info>();
 		try {
 			List<InfoTag> infoId = mInfoTagDao.queryBuilder().where()
 					.eq(InfoTag.COLUMN_TAG, tag).query();
 			for (InfoTag id : infoId) {
 				cropInfo = mDao.queryBuilder().where()
-						.eq(InfoTable.COLUMN_ID, id.getInfo_id()).query();
-				for (InfoTable infoTable : cropInfo) {
+						.eq(Info.COLUMN_ID, id.getInfo_id()).query();
+				for (Info infoTable : cropInfo) {
 					Info info = new Info();
 					info.setBodyEn(infoTable.getBodyEn());
 					info.setBodyNp(infoTable.getBodyNp());

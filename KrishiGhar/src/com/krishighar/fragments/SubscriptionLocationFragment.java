@@ -13,7 +13,7 @@ import com.android.volley.Response.Listener;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.krishighar.activities.MainActivity;
-import com.krishighar.activities.Settings;
+import com.krishighar.activities.ChangeSubscription;
 import com.krishighar.adapters.LocationAdapter;
 import com.krishighar.api.KrishiGharUrls;
 import com.krishighar.api.models.GetLocationResponse;
@@ -31,7 +31,7 @@ public class SubscriptionLocationFragment extends SherlockListFragment
 	String tag_json_obj = "json_obj_req";
 	private AgricultureInfoPreference mPrefs;
 	private MainActivity mActivity;
-	private Settings mSetting;
+	private ChangeSubscription mSetting;
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -58,7 +58,7 @@ public class SubscriptionLocationFragment extends SherlockListFragment
 		if (activity instanceof MainActivity) {
 			mActivity = (MainActivity) activity;
 		} else {
-			mSetting = (Settings) activity;
+			mSetting = (ChangeSubscription) activity;
 		}
 	}
 

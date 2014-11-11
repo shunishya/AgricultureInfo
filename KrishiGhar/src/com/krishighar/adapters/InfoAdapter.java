@@ -1,5 +1,7 @@
 package com.krishighar.adapters;
 
+import java.util.ArrayList;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,18 +11,20 @@ import android.widget.TextView;
 
 import com.krishigar.justifiedtextview.utils.TextViewEx;
 import com.krishighar.R;
-import com.krishighar.models.Info;
-
-import java.util.ArrayList;
+import com.krishighar.db.models.Info;
+import com.krishighar.fragments.LanguageChooseFrag;
+import com.krishighar.utils.AgricultureInfoPreference;
 
 public class InfoAdapter extends ArrayAdapter<Info> {
 	private LayoutInflater mInflater;
 	private ArrayList<Info> mInfos;
+	private AgricultureInfoPreference mPrefs;
 
 	public InfoAdapter(Context context, ArrayList<Info> infos) {
 		super(context, R.id.tvTitle, infos);
 		mInflater = LayoutInflater.from(context);
 		this.mInfos = infos;
+		this.mPrefs = new AgricultureInfoPreference(context);
 
 	}
 
@@ -49,8 +53,8 @@ public class InfoAdapter extends ArrayAdapter<Info> {
 		} else {
 			holder = (ViewHolder) convertView.getTag();
 		}
-		holder.tvTitle.setText(item.getTitleEn());
-		holder.tvInfo.setText(item.getBodyEn(), true);
+		holder.tvTitle.setText(mPrefs.getLanguage()==LanguageChooseFrag.ENGLISH?item.getTitleEn():item.getTitleNp());
+		holder.tvInfo.setText(mPrefs.getLanguage()==LanguageChooseFrag.ENGLISH?item.getBodyEn():item.getBodyNp(), true);
 		holder.tvFrom.setText("From: " + item.getFrom());
 
 		return convertView;

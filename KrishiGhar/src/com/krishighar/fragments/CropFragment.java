@@ -23,8 +23,8 @@ import com.krishighar.api.KrishiGharUrls;
 import com.krishighar.api.models.InfoResponse;
 import com.krishighar.db.InfoDbHelper;
 import com.krishighar.db.models.Crop;
+import com.krishighar.db.models.Info;
 import com.krishighar.gcm.AppUtil;
-import com.krishighar.models.Info;
 import com.krishighar.utils.JsonUtil;
 
 public class CropFragment extends SherlockFragment implements
@@ -54,14 +54,17 @@ public class CropFragment extends SherlockFragment implements
 		lvInfo.setDivider(null);
 		String url = KrishiGharUrls.GET_CROP_INFO_URL + crop.getTag() + "/"
 				+ System.currentTimeMillis() + "";
-		if (mInfoDbHelper.isTableEmpty()) {
-			JsonObjectRequest jsonRequest = new JsonObjectRequest(Method.GET,
-					url, null, this, this);
-			AppUtil.getInstance().addToRequestQueue(jsonRequest, tag_json_obj);
-		} else {
-			lvInfo.setAdapter(new InfoAdapter(getSherlockActivity(),
-					mInfoDbHelper.getAllInfo(crop.getTag())));
-		}
+		JsonObjectRequest jsonRequest = new JsonObjectRequest(Method.GET,
+				url, null, this, this);
+		AppUtil.getInstance().addToRequestQueue(jsonRequest, tag_json_obj);
+//		if (mInfoDbHelper.isTableEmpty()) {
+//			JsonObjectRequest jsonRequest = new JsonObjectRequest(Method.GET,
+//					url, null, this, this);
+//			AppUtil.getInstance().addToRequestQueue(jsonRequest, tag_json_obj);
+//		} else {
+//			lvInfo.setAdapter(new InfoAdapter(getSherlockActivity(),
+//					mInfoDbHelper.getAllInfo(crop.getTag())));
+//		}
 		return rootView;
 	}
 

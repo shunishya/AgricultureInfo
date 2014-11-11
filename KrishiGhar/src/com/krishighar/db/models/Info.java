@@ -1,24 +1,28 @@
-package com.krishighar.models;
+package com.krishighar.db.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+import com.krishighar.db.DbConf;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+@DatabaseTable(tableName = DbConf.TABLE_INFO)
 public class Info {
-	private String from;
+
+	public static String COLUMN_ID = "id";
+
+	@DatabaseField
 	private String titleEn;
+	@DatabaseField
 	private String bodyEn;
+	@DatabaseField
 	private long timestamp;
-	private String bodyNp;
+	@DatabaseField
+	private String from;
+	@DatabaseField
 	private String titleNp;
+	@DatabaseField
+	private String bodyNp;
+	@DatabaseField(id = true)
 	private int id;
-
-	public String getFrom() {
-		return from;
-	}
-
-	public void setFrom(String from) {
-		this.from = from;
-	}
 
 	public String getTitleEn() {
 		return titleEn;
@@ -36,12 +40,12 @@ public class Info {
 		this.bodyEn = bodyEn;
 	}
 
-	public String getBodyNp() {
-		return bodyNp;
+	public String getFrom() {
+		return from;
 	}
 
-	public void setBodyNp(String bodyNp) {
-		this.bodyNp = bodyNp;
+	public void setFrom(String from) {
+		this.from = from;
 	}
 
 	public String getTitleNp() {
@@ -50,6 +54,14 @@ public class Info {
 
 	public void setTitleNp(String titleNp) {
 		this.titleNp = titleNp;
+	}
+
+	public String getBodyNp() {
+		return bodyNp;
+	}
+
+	public void setBodyNp(String bodyNp) {
+		this.bodyNp = bodyNp;
 	}
 
 	public long getTimestamp() {
@@ -67,5 +79,4 @@ public class Info {
 	public void setId(int id) {
 		this.id = id;
 	}
-
 }

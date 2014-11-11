@@ -1,5 +1,6 @@
 package com.krishighar.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,8 @@ import android.widget.Button;
 
 import com.actionbarsherlock.app.SherlockFragment;
 import com.krishighar.R;
+import com.krishighar.activities.FeedActivity;
+import com.krishighar.activities.MainActivity;
 import com.krishighar.utils.AgricultureInfoPreference;
 
 public class LanguageChooseFrag extends SherlockFragment implements
@@ -41,24 +44,29 @@ public class LanguageChooseFrag extends SherlockFragment implements
 		switch (view.getId()) {
 		case R.id.btnEnglish:
 			mPrefs.setLanguage(ENGLISH);
-			getSherlockActivity()
-					.getSupportFragmentManager()
-					.beginTransaction()
-					.replace(R.id.container, new SubscriptionLocationFragment())
-					.commit();
+			gotoNextFragment();
 			break;
 		case R.id.btnNepali:
 			mPrefs.setLanguage(NEPALI);
-			getSherlockActivity()
-					.getSupportFragmentManager()
-					.beginTransaction()
-					.replace(R.id.container, new SubscriptionLocationFragment())
-					.commit();
+			gotoNextFragment();
 			break;
 
 		default:
 			break;
 		}
 
+	}
+
+	private void gotoNextFragment() {
+		if (getSherlockActivity() instanceof MainActivity) {
+			getSherlockActivity()
+					.getSupportFragmentManager()
+					.beginTransaction()
+					.replace(R.id.container, new SubscriptionLocationFragment())
+					.commit();
+		} else {
+			startActivity(new Intent(getSherlockActivity(), FeedActivity.class));
+			getSherlockActivity().finish();
+		}
 	}
 }

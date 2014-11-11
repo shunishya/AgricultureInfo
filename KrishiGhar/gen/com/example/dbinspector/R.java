@@ -19,7 +19,7 @@ public final class R {
 		public static final int ic_launcher_dbinspector = 0x7f020075;
 	}
 	public static final class id {
-		public static final int dbinspector_action_settings = 0x7f08004d;
+		public static final int dbinspector_action_settings = 0x7f08004f;
 		public static final int dbinspector_button_next = 0x7f080040;
 		public static final int dbinspector_button_previous = 0x7f08003e;
 		public static final int dbinspector_container = 0x7f08003c;

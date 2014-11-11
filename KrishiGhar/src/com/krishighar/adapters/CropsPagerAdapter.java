@@ -10,21 +10,21 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 public class CropsPagerAdapter extends FragmentPagerAdapter {
-	private List<Crop> mTitles;
+	private List<Crop> crops;
 
 	public CropsPagerAdapter(FragmentManager fm, List<Crop> titles) {
 		super(fm);
-		this.mTitles = titles;
+		this.crops = titles;
 	}
 
 	@Override
 	public Fragment getItem(int position) {
-		return CropFragment.newInstance(mTitles.get(position));
+		return CropFragment.newInstance(crops.get(position));
 	}
 
 	@Override
 	public int getCount() {
-		return mTitles.size();
+		return crops.size();
 	}
 
 }

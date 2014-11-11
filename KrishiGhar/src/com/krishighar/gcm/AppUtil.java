@@ -149,6 +149,7 @@ public class AppUtil extends Application {
 		context.sendBroadcast(intent);
 	}
 
+	@SuppressWarnings("deprecation")
 	public void showAlert(Context context, String title, String message,
 			Boolean status) {
 		AlertDialog alert = new AlertDialog.Builder(context).create();

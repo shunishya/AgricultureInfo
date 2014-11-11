@@ -3,7 +3,7 @@ package com.krishighar.api.models;
 import java.util.ArrayList;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.krishighar.models.Info;
+import com.krishighar.db.models.Info;
 
 public class InfoResponse extends BaseResponse {
 	@JsonProperty("body")

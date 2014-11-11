@@ -13,7 +13,7 @@ import com.android.volley.Response.Listener;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.krishighar.activities.MainActivity;
-import com.krishighar.activities.Settings;
+import com.krishighar.activities.ChangeSubscription;
 import com.krishighar.adapters.CropsAdapter;
 import com.krishighar.api.KrishiGharUrls;
 import com.krishighar.api.models.GetCropsResponse;
@@ -35,7 +35,7 @@ public class SubsciptionCropsFragment extends SherlockListFragment implements
 	String tag_json_obj = "json_obj_req_crop";
 	private MainActivity mActivity;
 	private AgricultureInfoPreference mPref;
-	private Settings mSettings;
+	private ChangeSubscription mSettings;
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -56,7 +56,7 @@ public class SubsciptionCropsFragment extends SherlockListFragment implements
 		if (activity instanceof MainActivity) {
 			mActivity = (MainActivity) activity;
 		} else {
-			mSettings = (Settings) activity;
+			mSettings = (ChangeSubscription) activity;
 		}
 	}
 

@@ -17,6 +17,7 @@ package com.krishighar.gcm;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gcm.GCMRegistrar;
 import com.krishighar.R;
@@ -62,6 +63,7 @@ public final class ServerUtilities {
 				post(serverUrl, params);
 				GCMRegistrar.setRegisteredOnServer(context, true);
 				String message = context.getString(R.string.server_registered);
+				Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
 
 				return true;
 			} catch (IOException e) {
@@ -108,7 +110,7 @@ public final class ServerUtilities {
 			// a "NotRegistered" error message and should unregister the device.
 			String message = context.getString(
 					R.string.server_unregister_error, e.getMessage());
-
+			Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
 		}
 	}
 

@@ -60,7 +60,9 @@ public class FeedActivity extends SherlockFragmentActivity {
 		@Override
 		public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
 			mPager.setCurrentItem(tab.getPosition());
-			tab.setText(crops.get(tab.getPosition()).getNameEn());
+			tab.setText(mPrefs.getLanguage() == LanguageChooseFrag.ENGLISH ? crops
+					.get(tab.getPosition()).getNameEn() : crops.get(
+					tab.getPosition()).getNameNp());
 		}
 
 		@Override
@@ -84,7 +86,11 @@ public class FeedActivity extends SherlockFragmentActivity {
 		mActionBar.setHomeButtonEnabled(true);
 		mActionBar.setDisplayShowTitleEnabled(true);
 		for (Crop crop : crops) {
-			ActionBar.Tab tab = mActionBar.newTab().setText(crop.getNameEn())
+			ActionBar.Tab tab = mActionBar
+					.newTab()
+					.setText(
+							mPrefs.getLanguage() == LanguageChooseFrag.ENGLISH ? crop
+									.getNameEn() : crop.getNameNp())
 					.setTabListener(tabListener);
 			mActionBar.addTab(tab);
 		}
