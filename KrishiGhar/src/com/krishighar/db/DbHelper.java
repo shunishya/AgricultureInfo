@@ -10,7 +10,7 @@ import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import com.krishighar.db.models.Crop;
-import com.krishighar.db.models.InfoTable;
+import com.krishighar.db.models.Info;
 import com.krishighar.db.models.InfoTag;
 
 public class DbHelper extends OrmLiteSqliteOpenHelper {
@@ -23,7 +23,7 @@ public class DbHelper extends OrmLiteSqliteOpenHelper {
 			ConnectionSource connectionSource) {
 		try {
 			TableUtils.createTable(connectionSource, Crop.class);
-			TableUtils.createTable(connectionSource, InfoTable.class);
+			TableUtils.createTable(connectionSource, Info.class);
 			TableUtils.createTable(connectionSource, InfoTag.class);
 		} catch (SQLException e) {
 			Log.e("DB_HELPER", "Unable to create datbases", e);
@@ -35,7 +35,7 @@ public class DbHelper extends OrmLiteSqliteOpenHelper {
 			ConnectionSource connectionSource, int oldVer, int newVer) {
 		try {
 			TableUtils.dropTable(connectionSource, Crop.class, true);
-			TableUtils.dropTable(connectionSource, InfoTable.class, true);
+			TableUtils.dropTable(connectionSource, Info.class, true);
 			TableUtils.dropTable(connectionSource, InfoTag.class, true);
 			onCreate(sqliteDatabase, connectionSource);
 		} catch (SQLException e) {

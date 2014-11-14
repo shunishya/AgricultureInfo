@@ -10,14 +10,18 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.krishighar.R;
+import com.krishighar.fragments.LanguageChooseFrag;
 import com.krishighar.models.Location;
+import com.krishighar.utils.AgricultureInfoPreference;
 
 public class LocationAdapter extends ArrayAdapter<Location> {
 	private LayoutInflater mInflater;
+	private AgricultureInfoPreference mPrefs;
 
 	public LocationAdapter(Context context, ArrayList<Location> locations) {
 		super(context, R.id.tvLocation, locations);
 		mInflater = LayoutInflater.from(context);
+		mPrefs = new AgricultureInfoPreference(context);
 	}
 
 	@Override
@@ -35,7 +39,11 @@ public class LocationAdapter extends ArrayAdapter<Location> {
 		} else {
 			holder = (ViewHolder) convertView.getTag();
 		}
-		holder.tvLocation.setText(item.getNameEn());
+		if (mPrefs.getLanguage() == LanguageChooseFrag.ENGLISH) {
+			holder.tvLocation.setText(item.getNameEn());
+		} else {
+			holder.tvLocation.setText(item.getNameNp());
+		}
 
 		return convertView;
 	}

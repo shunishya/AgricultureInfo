@@ -5,9 +5,9 @@ import com.j256.ormlite.table.DatabaseTable;
 import com.krishighar.db.DbConf;
 
 @DatabaseTable(tableName = DbConf.TABLE_INFO)
-public class InfoTable {
+public class Info {
 
-	public static String COLUMN_ID = "infoId";
+	public static String COLUMN_ID = "id";
 
 	@DatabaseField
 	private String titleEn;
@@ -16,7 +16,7 @@ public class InfoTable {
 	@DatabaseField
 	private long timestamp;
 	@DatabaseField
-	private String from;
+	private String infoFrom;
 	@DatabaseField
 	private String titleNp;
 	@DatabaseField
@@ -40,12 +40,12 @@ public class InfoTable {
 		this.bodyEn = bodyEn;
 	}
 
-	public String getFrom() {
-		return from;
+	public String getInfoFrom() {
+		return infoFrom;
 	}
 
-	public void setFrom(String from) {
-		this.from = from;
+	public void setInfoFrom(String infoFrom) {
+		this.infoFrom = infoFrom;
 	}
 
 	public String getTitleNp() {

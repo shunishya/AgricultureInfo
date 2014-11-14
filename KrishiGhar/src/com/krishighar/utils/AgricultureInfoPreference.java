@@ -10,9 +10,9 @@ public class AgricultureInfoPreference {
 	private static final String PREFS_NAME = "AgricultureInfoPreference";
 	private static final String LOCATION_NAME = "location";
 	private static final String LOCATION_ID = "location_id";
+	private static final String PREFFERED_LANGUAGE = "preffered_lang";
+	private static final String DEVICE_ID = "_deviceId";
 
-	private static final String CROPSNUMBER = "";
-	private static final String CROPS = "crops";
 	private static final String ISLOGGEDIN = "is_loggedin";
 	private static final String GCM_REGISTRATION_ID = "_gcm_registration_id";
 
@@ -70,6 +70,26 @@ public class AgricultureInfoPreference {
 
 	public String getGCMRegistrationID() {
 		return mSharedPreferences.getString(GCM_REGISTRATION_ID, null);
+	}
+
+	public void setLanguage(int lang_id) {
+		mEditor = mSharedPreferences.edit();
+		mEditor.putInt(PREFFERED_LANGUAGE, lang_id);
+		mEditor.commit();
+	}
+
+	public int getLanguage() {
+		return mSharedPreferences.getInt(PREFFERED_LANGUAGE, -1);
+	}
+
+	public String getDeviceId() {
+		return mSharedPreferences.getString(DEVICE_ID, null);
+	}
+
+	public void setDeviceId(String deviceID) {
+		mEditor = mSharedPreferences.edit();
+		mEditor.putString(DEVICE_ID, deviceID);
+		mEditor.commit();
 	}
 
 }

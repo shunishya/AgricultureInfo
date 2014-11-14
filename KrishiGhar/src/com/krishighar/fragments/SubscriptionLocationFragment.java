@@ -13,12 +13,15 @@ import com.android.volley.Response.Listener;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.krishighar.activities.MainActivity;
+import com.krishighar.activities.ChangeSubscription;
 import com.krishighar.adapters.LocationAdapter;
 import com.krishighar.api.KrishiGharUrls;
 import com.krishighar.api.models.GetLocationResponse;
 import com.krishighar.gcm.AppUtil;
 import com.krishighar.models.Location;
+import com.krishighar.utils.AgricultureInfoPreference;
 import com.krishighar.utils.JsonUtil;
+import com.krishighar.utils.StringHelper;
 
 import org.json.JSONObject;
 
@@ -26,13 +29,17 @@ public class SubscriptionLocationFragment extends SherlockListFragment
 		implements ErrorListener, Listener<JSONObject> {
 	// Tag used to cancel the request
 	String tag_json_obj = "json_obj_req";
+	private AgricultureInfoPreference mPrefs;
 	private MainActivity mActivity;
+	private ChangeSubscription mSetting;
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
-		mActivity.getSupportActionBar().setTitle("Select Location");
+		mPrefs = new AgricultureInfoPreference(getSherlockActivity());
+		getSherlockActivity().getSupportActionBar().setTitle(
+				StringHelper.getLocationFragTitle(mPrefs.getLanguage()));
 		JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Method.GET,
 				KrishiGharUrls.GET_LOCATION_URL, null, this, this);
 		AppUtil.getInstance()
@@ -48,18 +55,23 @@ public class SubscriptionLocationFragment extends SherlockListFragment
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		mActivity = (MainActivity) activity;
+		if (activity instanceof MainActivity) {
+			mActivity = (MainActivity) activity;
+		} else {
+			mSetting = (ChangeSubscription) activity;
+		}
 	}
-
-	public static final String[] LOCATION = { "लालितप�?र", "ध�?लिखेल", "बनेपा",
-			"ब�?टबल", "दाङ", "इलाम" };
 
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
 		LocationAdapter adapter = (LocationAdapter) getListAdapter();
 		Location loc = (Location) adapter.getItem(position);
-		mActivity.onLocationSelected(loc.getNameEn(), loc.getId());
+		if (mActivity != null) {
+			mActivity.onLocationSelected(loc.getNameEn(), loc.getId());
+		} else {
+			mSetting.onLocationSelected(loc.getNameEn(), loc.getId());
+		}
 	}
 
 	@Override

@@ -12,6 +12,7 @@ import com.krishighar.activities.FeedActivity;
 import com.krishighar.activities.SendGCMId;
 import com.krishighar.api.models.PushedInfo;
 import com.krishighar.db.InfoDbHelper;
+import com.krishighar.fragments.LanguageChooseFrag;
 import com.krishighar.gcm.AppUtil;
 import com.krishighar.gcm.Config;
 import com.krishighar.utils.AgricultureInfoPreference;
@@ -76,22 +77,26 @@ public class GCMIntentService extends GCMBaseIntentService {
 	private static void generateNotification(Context context, String message) {
 		int icon = R.drawable.ic_launcher;
 		long when = System.currentTimeMillis();
+		AgricultureInfoPreference mPrefs = new AgricultureInfoPreference(
+				context);
 		InfoDbHelper dbHelper = new InfoDbHelper(context);
 		PushedInfo info = (PushedInfo) JsonUtil.readJsonString(message,
 				PushedInfo.class);
 		dbHelper.addInfo(info);
 		NotificationManager notificationManager = (NotificationManager) context
 				.getSystemService(Context.NOTIFICATION_SERVICE);
-		Notification notification = new Notification(icon, info.getInfoTitle(),
-				when);
+		String infoTitle = mPrefs.getLanguage() == LanguageChooseFrag.ENGLISH ? info
+				.getInfo().getTitleEn() : info.getInfo().getTitleNp();
+		String infoBody = mPrefs.getLanguage() == LanguageChooseFrag.ENGLISH ? info
+				.getInfo().getBodyEn() : info.getInfo().getBodyNp();
+		Notification notification = new Notification(icon, infoTitle, when);
 		String title = "KrishiGhar";
 		Intent notificationIntent = new Intent(context, FeedActivity.class);
 		notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
 				| Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		PendingIntent intent = PendingIntent.getActivity(context, 0,
 				notificationIntent, 0);
-		notification.setLatestEventInfo(context, title, info.getInfoBody(),
-				intent);
+		notification.setLatestEventInfo(context, title, infoBody, intent);
 		notification.flags |= Notification.FLAG_AUTO_CANCEL;
 		notification.defaults |= Notification.DEFAULT_SOUND;
 		notification.defaults |= Notification.DEFAULT_VIBRATE;

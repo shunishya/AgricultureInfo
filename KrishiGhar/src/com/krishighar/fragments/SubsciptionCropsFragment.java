@@ -13,6 +13,7 @@ import com.android.volley.Response.Listener;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.krishighar.activities.MainActivity;
+import com.krishighar.activities.ChangeSubscription;
 import com.krishighar.adapters.CropsAdapter;
 import com.krishighar.api.KrishiGharUrls;
 import com.krishighar.api.models.GetCropsResponse;
@@ -21,6 +22,7 @@ import com.krishighar.gcm.AppUtil;
 import com.krishighar.models.CropsListItem;
 import com.krishighar.utils.AgricultureInfoPreference;
 import com.krishighar.utils.JsonUtil;
+import com.krishighar.utils.StringHelper;
 
 import org.json.JSONObject;
 
@@ -33,13 +35,15 @@ public class SubsciptionCropsFragment extends SherlockListFragment implements
 	String tag_json_obj = "json_obj_req_crop";
 	private MainActivity mActivity;
 	private AgricultureInfoPreference mPref;
+	private ChangeSubscription mSettings;
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		mPref = new AgricultureInfoPreference(getSherlockActivity());
 
-		getSherlockActivity().getSupportActionBar().setTitle("Select Crops");
+		getSherlockActivity().getSupportActionBar().setTitle(
+				StringHelper.getCropdFragTitle(mPref.getLanguage()));
 		String url = KrishiGharUrls.GET_CROPS_URL + mPref.getLocationId();
 		JsonObjectRequest jsonRequest = new JsonObjectRequest(Method.GET, url,
 				null, this, this);
@@ -49,7 +53,11 @@ public class SubsciptionCropsFragment extends SherlockListFragment implements
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		mActivity = (MainActivity) activity;
+		if (activity instanceof MainActivity) {
+			mActivity = (MainActivity) activity;
+		} else {
+			mSettings = (ChangeSubscription) activity;
+		}
 	}
 
 	@Override
@@ -77,9 +85,17 @@ public class SubsciptionCropsFragment extends SherlockListFragment implements
 		item.setChecked(item.isChecked() ? false : true);
 		adapter.notifyDataSetChanged();
 		if (item.isChecked()) {
-			mActivity.enableDoneMenuItem(true);
+			if (mActivity != null) {
+				mActivity.enableDoneMenuItem(true);
+			} else {
+				mSettings.enableDoneMenuItem(true);
+			}
 		} else {
-			mActivity.enableDoneMenuItem(hasAnyItemSelected());
+			if (mActivity != null) {
+				mActivity.enableDoneMenuItem(hasAnyItemSelected());
+			} else {
+				mSettings.enableDoneMenuItem(hasAnyItemSelected());
+			}
 		}
 	}
 

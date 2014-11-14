@@ -41,7 +41,7 @@ public class SplashFragment extends SherlockFragment {
 						.getSupportFragmentManager()
 						.beginTransaction()
 						.replace(R.id.container,
-								new SubscriptionLocationFragment()).commit();
+								new LanguageChooseFrag()).commit();
 			}
 
 		}
