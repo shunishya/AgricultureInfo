@@ -45,7 +45,7 @@ public class InfoDbHelper {
 		for (Info info : infos) {
 			row.setBodyEn(info.getBodyEn());
 			row.setBodyNp(info.getBodyNp());
-			row.setFrom(info.getFrom());
+			row.setFrom(info.getInfoFrom());
 			row.setTimestamp(info.getTimestamp());
 			row.setTitleEn(info.getTitleEn());
 			row.setTitleNp(info.getTitleNp());
@@ -89,7 +89,7 @@ public class InfoDbHelper {
 					Info info = new Info();
 					info.setBodyEn(infoTable.getBodyEn());
 					info.setBodyNp(infoTable.getBodyNp());
-					info.setFrom(infoTable.getFrom());
+					info.setInfoFrom(infoTable.getFrom());
 					info.setId(infoTable.getId());
 					info.setTimestamp(infoTable.getTimestamp());
 					info.setTitleEn(infoTable.getTitleEn());

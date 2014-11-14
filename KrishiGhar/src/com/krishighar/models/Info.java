@@ -4,21 +4,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Info {
-	private String from;
+	private String infoFrom;
 	private String titleEn;
 	private String bodyEn;
 	private long timestamp;
 	private String bodyNp;
 	private String titleNp;
 	private int id;
-
-	public String getFrom() {
-		return from;
-	}
-
-	public void setFrom(String from) {
-		this.from = from;
-	}
 
 	public String getTitleEn() {
 		return titleEn;
@@ -66,6 +58,14 @@ public class Info {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public String getInfoFrom() {
+		return infoFrom;
+	}
+
+	public void setInfoFrom(String infoFrom) {
+		this.infoFrom = infoFrom;
 	}
 
 }

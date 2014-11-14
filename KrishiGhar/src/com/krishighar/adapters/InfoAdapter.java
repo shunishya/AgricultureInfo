@@ -51,7 +51,7 @@ public class InfoAdapter extends ArrayAdapter<Info> {
 		}
 		holder.tvTitle.setText(item.getTitleEn());
 		holder.tvInfo.setText(item.getBodyEn(), true);
-		holder.tvFrom.setText("From: " + item.getFrom());
+		holder.tvFrom.setText("From: " + item.getInfoFrom());
 
 		return convertView;
 	}

@@ -65,7 +65,7 @@ public class CropFragment extends SherlockFragment implements
 		}
 		String url = KrishiGharUrls.GET_CROP_INFO_URL + crop.getTag()
 				+ "3536836863";
-		JsonObjectRequest jsonRequest = new JsonObjectRequest(Method.POST, url,
+		JsonObjectRequest jsonRequest = new JsonObjectRequest(Method.GET, url,
 				objectRequest, this, this);
 		AppUtil.getInstance().addToRequestQueue(jsonRequest, tag_json_obj);
 		return rootView;
