@@ -1,6 +1,5 @@
 package com.krishighar.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,9 +9,10 @@ import android.widget.Button;
 
 import com.actionbarsherlock.app.SherlockFragment;
 import com.krishighar.R;
-import com.krishighar.activities.FeedActivity;
-import com.krishighar.activities.MainActivity;
+import com.krishighar.activities.Subscription;
+import com.krishighar.interfaces.SubcriptionListener;
 import com.krishighar.utils.AgricultureInfoPreference;
+import com.krishighar.utils.Network;
 
 public class LanguageChooseFrag extends SherlockFragment implements
 		OnClickListener {
@@ -57,15 +57,29 @@ public class LanguageChooseFrag extends SherlockFragment implements
 
 	}
 
+	@Override
+	public void onResume() {
+		super.onResume();
+	}
+
 	private void gotoNextFragment() {
-		if (getSherlockActivity() instanceof MainActivity) {
-			getSherlockActivity()
-					.getSupportFragmentManager()
-					.beginTransaction()
-					.replace(R.id.container, new SubscriptionLocationFragment())
-					.commit();
+		if (getSherlockActivity() instanceof Subscription) {
+			if (Network.isConnected(getSherlockActivity())) {
+				SubcriptionListener mListener = (SubcriptionListener) getSherlockActivity();
+				getSherlockActivity()
+						.getSupportFragmentManager()
+						.beginTransaction()
+						.addToBackStack(null)
+						.replace(R.id.container,
+								new SubscriptionLocationFragment(mListener))
+						.commit();
+			} else {
+				Network.showSettingsAlert(getSherlockActivity(),
+						mPrefs.getLanguage());
+			}
 		} else {
-			startActivity(new Intent(getSherlockActivity(), FeedActivity.class));
+			// startActivity(new Intent(getSherlockActivity(),
+			// FeedActivity.class));
 			getSherlockActivity().finish();
 		}
 	}

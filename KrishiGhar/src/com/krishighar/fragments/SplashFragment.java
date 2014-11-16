@@ -8,12 +8,15 @@ import android.view.ViewGroup;
 
 import com.actionbarsherlock.app.SherlockFragment;
 import com.krishighar.R;
-import com.krishighar.activities.MainActivity;
+import com.krishighar.activities.Subscription;
 import com.krishighar.db.CropDbHelper;
+import com.krishighar.utils.AgricultureInfoPreference;
+import com.krishighar.utils.Network;
 
 public class SplashFragment extends SherlockFragment {
-	private MainActivity mActivity;
+	private Subscription mActivity;
 	private CropDbHelper mCropDbHelper;
+	private int lang_id;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -27,7 +30,7 @@ public class SplashFragment extends SherlockFragment {
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		mActivity = (MainActivity) activity;
+		mActivity = (Subscription) activity;
 	}
 
 	@Override
@@ -35,15 +38,21 @@ public class SplashFragment extends SherlockFragment {
 		super.onResume();
 		if (mActivity != null) {
 			if (mCropDbHelper.getCrops().size() > 0) {
-				mActivity.onSuccessfullSubcription();
+				lang_id = new AgricultureInfoPreference(mActivity)
+						.getLanguage();
+				if (Network.isConnected(getSherlockActivity())) {
+					mActivity.onSuccessfullSubcription();
+				} else {
+					Network.showSettingsAlert(getSherlockActivity(), lang_id);
+				}
 			} else {
-				getSherlockActivity()
-						.getSupportFragmentManager()
+				getSherlockActivity().getSupportFragmentManager()
 						.beginTransaction()
-						.replace(R.id.container,
-								new LanguageChooseFrag()).commit();
+						.replace(R.id.container, new LanguageChooseFrag())
+						.commit();
 			}
 
 		}
 	}
+
 }

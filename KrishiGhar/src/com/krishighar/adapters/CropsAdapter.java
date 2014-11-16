@@ -18,11 +18,14 @@ import java.util.List;
 public class CropsAdapter extends ArrayAdapter<CropsListItem> {
 	private LayoutInflater mInflater;
 	private AgricultureInfoPreference mPrefs;
+	private boolean isLanguageEn;
 
 	public CropsAdapter(Context context, List<CropsListItem> objects) {
 		super(context, R.id.tvCrop, objects);
 		mInflater = LayoutInflater.from(context);
 		mPrefs = new AgricultureInfoPreference(context);
+		isLanguageEn = mPrefs.getLanguage() == LanguageChooseFrag.ENGLISH ? true
+				: false;
 	}
 
 	@Override
@@ -40,7 +43,7 @@ public class CropsAdapter extends ArrayAdapter<CropsListItem> {
 		} else {
 			holder = (ViewHolder) convertView.getTag();
 		}
-		if (mPrefs.getLanguage() == LanguageChooseFrag.ENGLISH) {
+		if (isLanguageEn) {
 			holder.tvCropName.setText(item.getCrop().getNameEn());
 		} else {
 			holder.tvCropName.setText(item.getCrop().getNameNp());

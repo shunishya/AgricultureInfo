@@ -1,8 +1,15 @@
 package com.krishighar.fragments;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.json.JSONObject;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -12,30 +19,27 @@ import com.android.volley.Response.ErrorListener;
 import com.android.volley.Response.Listener;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.krishighar.activities.MainActivity;
-import com.krishighar.activities.ChangeSubscription;
 import com.krishighar.adapters.CropsAdapter;
 import com.krishighar.api.KrishiGharUrls;
 import com.krishighar.api.models.GetCropsResponse;
 import com.krishighar.db.models.Crop;
 import com.krishighar.gcm.AppUtil;
+import com.krishighar.interfaces.SubcriptionListener;
 import com.krishighar.models.CropsListItem;
 import com.krishighar.utils.AgricultureInfoPreference;
 import com.krishighar.utils.JsonUtil;
 import com.krishighar.utils.StringHelper;
 
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
-
 public class SubsciptionCropsFragment extends SherlockListFragment implements
 		Listener<JSONObject>, ErrorListener {
 
 	String tag_json_obj = "json_obj_req_crop";
-	private MainActivity mActivity;
 	private AgricultureInfoPreference mPref;
-	private ChangeSubscription mSettings;
+	private SubcriptionListener mSubscriptionListener;
+
+	public SubsciptionCropsFragment(SubcriptionListener subscriptionListener) {
+		this.mSubscriptionListener = subscriptionListener;
+	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -44,6 +48,10 @@ public class SubsciptionCropsFragment extends SherlockListFragment implements
 
 		getSherlockActivity().getSupportActionBar().setTitle(
 				StringHelper.getCropdFragTitle(mPref.getLanguage()));
+		requestForCrops();
+	}
+
+	private void requestForCrops() {
 		String url = KrishiGharUrls.GET_CROPS_URL + mPref.getLocationId();
 		JsonObjectRequest jsonRequest = new JsonObjectRequest(Method.GET, url,
 				null, this, this);
@@ -53,11 +61,6 @@ public class SubsciptionCropsFragment extends SherlockListFragment implements
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		if (activity instanceof MainActivity) {
-			mActivity = (MainActivity) activity;
-		} else {
-			mSettings = (ChangeSubscription) activity;
-		}
 	}
 
 	@Override
@@ -85,17 +88,9 @@ public class SubsciptionCropsFragment extends SherlockListFragment implements
 		item.setChecked(item.isChecked() ? false : true);
 		adapter.notifyDataSetChanged();
 		if (item.isChecked()) {
-			if (mActivity != null) {
-				mActivity.enableDoneMenuItem(true);
-			} else {
-				mSettings.enableDoneMenuItem(true);
-			}
+			mSubscriptionListener.enableDoneMenuItem(true);
 		} else {
-			if (mActivity != null) {
-				mActivity.enableDoneMenuItem(hasAnyItemSelected());
-			} else {
-				mSettings.enableDoneMenuItem(hasAnyItemSelected());
-			}
+			mSubscriptionListener.enableDoneMenuItem(hasAnyItemSelected());
 		}
 	}
 
@@ -122,8 +117,18 @@ public class SubsciptionCropsFragment extends SherlockListFragment implements
 
 	@Override
 	public void onErrorResponse(VolleyError error) {
-		Toast.makeText(getSherlockActivity(), "Please try again later.",
-				Toast.LENGTH_SHORT).show();
+		Toast.makeText(getSherlockActivity(),
+				"Get Crops error::" + error.toString(), Toast.LENGTH_SHORT)
+				.show();
+		Button btnTryAgain = mSubscriptionListener.onVolleyError();
+		btnTryAgain.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				requestForCrops();
+				mSubscriptionListener.onRequest();
+			}
+		});
 
 	}
 

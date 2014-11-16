@@ -17,6 +17,11 @@ import com.android.volley.Response.ErrorListener;
 import com.android.volley.Response.Listener;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
+import com.handmark.pulltorefresh.library.PullToRefreshBase.OnLastItemVisibleListener;
+import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.krishighar.R;
 import com.krishighar.adapters.InfoAdapter;
 import com.krishighar.api.KrishiGharUrls;
@@ -28,13 +33,16 @@ import com.krishighar.gcm.AppUtil;
 import com.krishighar.utils.JsonUtil;
 
 public class CropFragment extends SherlockFragment implements
-		Listener<JSONObject>, ErrorListener {
+		Listener<JSONObject>, ErrorListener, OnRefreshListener<ListView>,
+		OnLastItemVisibleListener {
 
 	private String tag_json_obj = "json_obj_req_get_info";
 
-	private ListView lvInfo;
+	private PullToRefreshListView lvInfo;
 	private Crop crop;
 	private InfoDbHelper mInfoDbHelper;
+	private InfoAdapter mAdapter;
+	private ArrayList<Info> infos;
 
 	public static CropFragment newInstance(Crop id) {
 		CropFragment fragment = new CropFragment();
@@ -47,25 +55,32 @@ public class CropFragment extends SherlockFragment implements
 			Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_crops_description,
 				container, false);
-		lvInfo = (ListView) rootView.findViewById(R.id.lvInfo);
+		lvInfo = (PullToRefreshListView) rootView.findViewById(R.id.lvInfo);
+		lvInfo.setMode(Mode.BOTH);
+
+		infos = new ArrayList<Info>();
 		mInfoDbHelper = new InfoDbHelper(getSherlockActivity());
-		ArrayList<Info> infos = new ArrayList<Info>();
-		lvInfo.setAdapter(new InfoAdapter(getSherlockActivity(), infos));
-		lvInfo.setDivider(null);
+
+		mAdapter = new InfoAdapter(getSherlockActivity(), infos);
+		lvInfo.setAdapter(mAdapter);
+		if (mInfoDbHelper.isTableEmpty()) {
+			getCropInfo();
+		} else {
+			infos.addAll(mInfoDbHelper.getAllInfo(crop.getTag()));
+			mAdapter.notifyDataSetChanged();
+		}
+		lvInfo.setOnRefreshListener(this);
+		lvInfo.setOnLastItemVisibleListener(this);
+
+		return rootView;
+	}
+
+	private void getCropInfo() {
 		String url = KrishiGharUrls.GET_CROP_INFO_URL + crop.getTag() + "/"
 				+ System.currentTimeMillis() + "";
 		JsonObjectRequest jsonRequest = new JsonObjectRequest(Method.GET,
 				url, null, this, this);
 		AppUtil.getInstance().addToRequestQueue(jsonRequest, tag_json_obj);
-//		if (mInfoDbHelper.isTableEmpty()) {
-//			JsonObjectRequest jsonRequest = new JsonObjectRequest(Method.GET,
-//					url, null, this, this);
-//			AppUtil.getInstance().addToRequestQueue(jsonRequest, tag_json_obj);
-//		} else {
-//			lvInfo.setAdapter(new InfoAdapter(getSherlockActivity(),
-//					mInfoDbHelper.getAllInfo(crop.getTag())));
-//		}
-		return rootView;
 	}
 
 	@Override
@@ -85,7 +100,25 @@ public class CropFragment extends SherlockFragment implements
 	public void onResponse(JSONObject response) {
 		InfoResponse res = (InfoResponse) JsonUtil.readJsonString(
 				response.toString(), InfoResponse.class);
-		lvInfo.setAdapter(new InfoAdapter(getSherlockActivity(), res.getInfos()));
+		infos.addAll(res.getInfos());
 		mInfoDbHelper.addInfo(res.getInfos(), crop.getTag());
+		mAdapter.notifyDataSetChanged();
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		mAdapter.checkLanguage();
+		mAdapter.notifyDataSetChanged();
+	}
+
+	@Override
+	public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+		lvInfo.onRefreshComplete();
+	}
+
+	@Override
+	public void onLastItemVisible() {
+		lvInfo.onRefreshComplete();
 	}
 }

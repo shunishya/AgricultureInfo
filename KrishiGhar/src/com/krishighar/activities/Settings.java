@@ -12,7 +12,7 @@ public class Settings extends SherlockFragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+		setContentView(R.layout.activity_subscription);
 		getSupportFragmentManager().beginTransaction()
 				.replace(R.id.container, new SettingOptionFrag()).commit();
 	}

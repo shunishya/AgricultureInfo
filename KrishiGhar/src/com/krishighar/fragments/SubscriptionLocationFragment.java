@@ -1,8 +1,12 @@
 package com.krishighar.fragments;
 
+import org.json.JSONObject;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -12,34 +16,42 @@ import com.android.volley.Response.ErrorListener;
 import com.android.volley.Response.Listener;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.krishighar.activities.MainActivity;
-import com.krishighar.activities.ChangeSubscription;
 import com.krishighar.adapters.LocationAdapter;
 import com.krishighar.api.KrishiGharUrls;
 import com.krishighar.api.models.GetLocationResponse;
 import com.krishighar.gcm.AppUtil;
+import com.krishighar.interfaces.SubcriptionListener;
 import com.krishighar.models.Location;
 import com.krishighar.utils.AgricultureInfoPreference;
 import com.krishighar.utils.JsonUtil;
 import com.krishighar.utils.StringHelper;
-
-import org.json.JSONObject;
 
 public class SubscriptionLocationFragment extends SherlockListFragment
 		implements ErrorListener, Listener<JSONObject> {
 	// Tag used to cancel the request
 	String tag_json_obj = "json_obj_req";
 	private AgricultureInfoPreference mPrefs;
-	private MainActivity mActivity;
-	private ChangeSubscription mSetting;
+	private SubcriptionListener mSubscriptionListener;
+
+	private int languageId;
+
+	public SubscriptionLocationFragment(SubcriptionListener subscriptionListener) {
+		this.mSubscriptionListener = subscriptionListener;
+	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
 		mPrefs = new AgricultureInfoPreference(getSherlockActivity());
+		languageId = mPrefs.getLanguage();
+
 		getSherlockActivity().getSupportActionBar().setTitle(
-				StringHelper.getLocationFragTitle(mPrefs.getLanguage()));
+				StringHelper.getLocationFragTitle(languageId));
+		requestForLocation();
+	}
+
+	private void requestForLocation() {
 		JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Method.GET,
 				KrishiGharUrls.GET_LOCATION_URL, null, this, this);
 		AppUtil.getInstance()
@@ -55,11 +67,6 @@ public class SubscriptionLocationFragment extends SherlockListFragment
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		if (activity instanceof MainActivity) {
-			mActivity = (MainActivity) activity;
-		} else {
-			mSetting = (ChangeSubscription) activity;
-		}
 	}
 
 	@Override
@@ -67,18 +74,23 @@ public class SubscriptionLocationFragment extends SherlockListFragment
 		super.onListItemClick(l, v, position, id);
 		LocationAdapter adapter = (LocationAdapter) getListAdapter();
 		Location loc = (Location) adapter.getItem(position);
-		if (mActivity != null) {
-			mActivity.onLocationSelected(loc.getNameEn(), loc.getId());
-		} else {
-			mSetting.onLocationSelected(loc.getNameEn(), loc.getId());
-		}
+		mSubscriptionListener.onLocationSelected(loc.getNameEn(), loc.getId());
 	}
 
 	@Override
 	public void onErrorResponse(VolleyError error) {
-		Toast.makeText(getSherlockActivity(), "Error:: please try again.",
-				Toast.LENGTH_SHORT).show();
+		Toast.makeText(getSherlockActivity(),
+				"Get location error::" + error.toString(), Toast.LENGTH_SHORT)
+				.show();
+		Button btnTryAgain = mSubscriptionListener.onVolleyError();
+		btnTryAgain.setOnClickListener(new OnClickListener() {
 
+			@Override
+			public void onClick(View v) {
+				requestForLocation();
+				mSubscriptionListener.onRequest();
+			}
+		});
 	}
 
 	@Override

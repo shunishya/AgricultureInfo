@@ -17,11 +17,14 @@ import com.krishighar.utils.AgricultureInfoPreference;
 public class LocationAdapter extends ArrayAdapter<Location> {
 	private LayoutInflater mInflater;
 	private AgricultureInfoPreference mPrefs;
+	private boolean isLanguageEn;
 
 	public LocationAdapter(Context context, ArrayList<Location> locations) {
 		super(context, R.id.tvLocation, locations);
 		mInflater = LayoutInflater.from(context);
 		mPrefs = new AgricultureInfoPreference(context);
+		isLanguageEn = mPrefs.getLanguage() == LanguageChooseFrag.ENGLISH ? true
+				: false;
 	}
 
 	@Override
@@ -39,7 +42,7 @@ public class LocationAdapter extends ArrayAdapter<Location> {
 		} else {
 			holder = (ViewHolder) convertView.getTag();
 		}
-		if (mPrefs.getLanguage() == LanguageChooseFrag.ENGLISH) {
+		if (isLanguageEn) {
 			holder.tvLocation.setText(item.getNameEn());
 		} else {
 			holder.tvLocation.setText(item.getNameNp());

@@ -8,6 +8,9 @@ import org.json.JSONObject;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -28,34 +31,31 @@ import com.krishighar.db.models.Crop;
 import com.krishighar.fragments.SubsciptionCropsFragment;
 import com.krishighar.fragments.SubscriptionLocationFragment;
 import com.krishighar.gcm.AppUtil;
+import com.krishighar.interfaces.SubcriptionListener;
 import com.krishighar.utils.AgricultureInfoPreference;
 import com.krishighar.utils.DeviceUtils;
 import com.krishighar.utils.JsonUtil;
 
 public class ChangeSubscription extends SherlockFragmentActivity implements
-		Listener<JSONObject>, ErrorListener {
+		Listener<JSONObject>, ErrorListener, SubcriptionListener {
 	boolean doneVisible;
 	private AgricultureInfoPreference mPrefs;
 	private ArrayList<Crop> crops;
 
 	private String tag_json_obj = "json_obj_req_update_info";
+	private Button btnTryAgain;
+	private View frag;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+		setContentView(R.layout.activity_subscription);
+		btnTryAgain = (Button) findViewById(R.id.btnTryAgain);
+		frag = findViewById(R.id.container);
 		mPrefs = new AgricultureInfoPreference(ChangeSubscription.this);
-		getSupportFragmentManager().beginTransaction()
-				.replace(R.id.container, new SubscriptionLocationFragment())
-				.commit();
-	}
-
-	public void onLocationSelected(String locationName, int locationId) {
-		new AgricultureInfoPreference(this).setLocation(locationName,
-				locationId);
-		getSupportFragmentManager().beginTransaction()
-				.replace(R.id.container, new SubsciptionCropsFragment())
+		getSupportFragmentManager()
+				.beginTransaction()
+				.replace(R.id.container, new SubscriptionLocationFragment(this))
 				.commit();
 	}
 
@@ -127,13 +127,6 @@ public class ChangeSubscription extends SherlockFragmentActivity implements
 		finish();
 	}
 
-	public void enableDoneMenuItem(boolean enable) {
-		if (doneVisible == enable)
-			return;
-		this.doneVisible = enable;
-		supportInvalidateOptionsMenu();
-	}
-
 	@Override
 	public void onErrorResponse(VolleyError arg0) {
 		Toast.makeText(ChangeSubscription.this, "Please try again later.",
@@ -143,10 +136,42 @@ public class ChangeSubscription extends SherlockFragmentActivity implements
 
 	@Override
 	public void onResponse(JSONObject arg0) {
+		Intent intent = new Intent();
+		LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 		new InfoDbHelper(this).clearTable();
 		CropDbHelper cropsDbHelper = new CropDbHelper(this);
 		cropsDbHelper.clearTable();
 		cropsDbHelper.addCrops(crops);
 		onSuccessfullUpdate();
+	}
+
+	@Override
+	public void onLocationSelected(String locationName, int locationId) {
+		new AgricultureInfoPreference(this).setLocation(locationName,
+				locationId);
+		getSupportFragmentManager().beginTransaction().addToBackStack(null)
+				.replace(R.id.container, new SubsciptionCropsFragment(this))
+				.commit();
+	}
+
+	@Override
+	public void enableDoneMenuItem(boolean enable) {
+		if (doneVisible == enable)
+			return;
+		this.doneVisible = enable;
+		supportInvalidateOptionsMenu();
+	}
+
+	@Override
+	public Button onVolleyError() {
+		btnTryAgain.setVisibility(View.VISIBLE);
+		frag.setVisibility(View.GONE);
+		return btnTryAgain;
+	}
+
+	@Override
+	public void onRequest() {
+		frag.setVisibility(View.VISIBLE);
+		btnTryAgain.setVisibility(View.GONE);
 	}
 }

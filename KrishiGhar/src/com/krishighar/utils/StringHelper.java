@@ -28,4 +28,36 @@ public class StringHelper {
 		}
 	}
 
+	public static String getDialogMessage(int lang_id) {
+		if (lang_id == LanguageChooseFrag.ENGLISH) {
+			return "Internet is not enabled! Want to go to settings menu ?";
+		} else {
+			return "अघाडी बढ्न इन्टरनेट चाहिन्छ ! इन्टरनेट सुचारु गर्नुहुन्छ ?";
+		}
+	}
+
+	public static String getPositiveValue(int lang_id) {
+		if (lang_id == LanguageChooseFrag.ENGLISH) {
+			return "Yes";
+		} else {
+			return "हो";
+		}
+	}
+
+	public static String getNegativeValue(int lang_id) {
+		if (lang_id == LanguageChooseFrag.ENGLISH) {
+			return "No";
+		} else {
+			return "होइन";
+		}
+	}
+
+	public static String getDialogTitle(int lang_id) {
+		if (lang_id == LanguageChooseFrag.ENGLISH) {
+			return "NETWORK SETTINGS";
+		} else {
+			return "इन्टरनेट सूचना";
+		}
+	}
+
 }
