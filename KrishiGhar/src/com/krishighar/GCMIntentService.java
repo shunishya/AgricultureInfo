@@ -79,16 +79,18 @@ public class GCMIntentService extends GCMBaseIntentService {
 		long when = System.currentTimeMillis();
 		AgricultureInfoPreference mPrefs = new AgricultureInfoPreference(
 				context);
+		boolean isLanguageEn = mPrefs.getLanguage() == LanguageChooseFrag.ENGLISH ? true
+				: false;
 		InfoDbHelper dbHelper = new InfoDbHelper(context);
 		PushedInfo info = (PushedInfo) JsonUtil.readJsonString(message,
 				PushedInfo.class);
 		dbHelper.addInfo(info);
 		NotificationManager notificationManager = (NotificationManager) context
 				.getSystemService(Context.NOTIFICATION_SERVICE);
-		String infoTitle = mPrefs.getLanguage() == LanguageChooseFrag.ENGLISH ? info
-				.getInfo().getTitleEn() : info.getInfo().getTitleNp();
-		String infoBody = mPrefs.getLanguage() == LanguageChooseFrag.ENGLISH ? info
-				.getInfo().getBodyEn() : info.getInfo().getBodyNp();
+		String infoTitle = isLanguageEn ? info.getInfo().getTitleEn() : info
+				.getInfo().getTitleNp();
+		String infoBody = isLanguageEn ? info.getInfo().getBodyEn() : info
+				.getInfo().getBodyNp();
 		Notification notification = new Notification(icon, infoTitle, when);
 		String title = "KrishiGhar";
 		Intent notificationIntent = new Intent(context, FeedActivity.class);

@@ -4,14 +4,10 @@ import im.dino.dbinspector.activities.DbInspectorActivity;
 
 import java.util.List;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -23,7 +19,6 @@ import com.krishighar.R;
 import com.krishighar.adapters.CropsPagerAdapter;
 import com.krishighar.db.CropDbHelper;
 import com.krishighar.db.models.Crop;
-import com.krishighar.fragments.LanguageChooseFrag;
 import com.krishighar.utils.AgricultureInfoPreference;
 import com.krishighar.utils.StringHelper;
 
@@ -91,6 +86,7 @@ public class FeedActivity extends SherlockFragmentActivity {
 										.getNameNp())
 						.setTabListener(tabListener);
 				mActionBar.addTab(tab);
+
 			}
 			mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		} else {
@@ -149,44 +145,32 @@ public class FeedActivity extends SherlockFragmentActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		LocalBroadcastManager.getInstance(this).registerReceiver(
-				broadcastReceiver, new IntentFilter());
-		isLanguageEn = mPrefs.getLanguage() == LanguageChooseFrag.ENGLISH ? true
-				: false;
-		if (crops.size() > 1) {
-			for (int i = 0; i < crops.size(); i++) {
+		boolean isLanguageChanged = lang_id == mPrefs.getLanguage() ? false
+				: true;
+		if (isLanguageChanged) {
+			if (crops.size() > 1) {
+				for (int i = 0; i < crops.size(); i++) {
+					if (isLanguageEn) {
+						mActionBar.getTabAt(i)
+								.setText(crops.get(i).getNameEn());
+					} else {
+						mActionBar.getTabAt(i)
+								.setText(crops.get(i).getNameNp());
+					}
+				}
+			} else {
 				if (isLanguageEn) {
-					mActionBar.getTabAt(i).setText(crops.get(i).getNameEn());
+					mActionBar.setTitle(crops.get(0).getNameEn());
 				} else {
-					mActionBar.getTabAt(i).setText(crops.get(i).getNameNp());
+					mActionBar.setTitle(crops.get(0).getNameNp());
 				}
 			}
-		} else {
-			if (isLanguageEn) {
-				mActionBar.setTitle(crops.get(0).getNameEn());
-			} else {
-				mActionBar.setTitle(crops.get(0).getNameNp());
-			}
 		}
-
 	}
 
 	@Override
 	protected void onDestroy() {
-		LocalBroadcastManager.getInstance(this).unregisterReceiver(
-				broadcastReceiver);
 		super.onDestroy();
 	}
-
-	private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			finish();
-		}
-	};
-
-	public void finish() {
-		super.finish();
-	};
 
 }

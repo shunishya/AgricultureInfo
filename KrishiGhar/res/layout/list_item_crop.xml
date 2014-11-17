@@ -13,6 +13,7 @@
         android:maxLines="1"
         android:paddingLeft="10dp"
         android:paddingTop="10dp"
+        android:textSize="20sp"
         android:textStyle="bold" />
 
     <ImageView

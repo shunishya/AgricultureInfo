@@ -64,7 +64,7 @@ public class CropFragment extends SherlockFragment implements
 		mAdapter = new InfoAdapter(getSherlockActivity(), infos);
 		lvInfo.setAdapter(mAdapter);
 		if (mInfoDbHelper.isTableEmpty()) {
-			getCropInfo();
+			getCropInfo(System.currentTimeMillis() + "");
 		} else {
 			infos.addAll(mInfoDbHelper.getAllInfo(crop.getTag()));
 			mAdapter.notifyDataSetChanged();
@@ -75,11 +75,11 @@ public class CropFragment extends SherlockFragment implements
 		return rootView;
 	}
 
-	private void getCropInfo() {
+	private void getCropInfo(String timestamp) {
 		String url = KrishiGharUrls.GET_CROP_INFO_URL + crop.getTag() + "/"
-				+ System.currentTimeMillis() + "";
-		JsonObjectRequest jsonRequest = new JsonObjectRequest(Method.GET,
-				url, null, this, this);
+				+ timestamp;
+		JsonObjectRequest jsonRequest = new JsonObjectRequest(Method.GET, url,
+				null, this, this);
 		AppUtil.getInstance().addToRequestQueue(jsonRequest, tag_json_obj);
 	}
 
@@ -91,9 +91,10 @@ public class CropFragment extends SherlockFragment implements
 	}
 
 	@Override
-	public void onErrorResponse(VolleyError arg0) {
-		Toast.makeText(getSherlockActivity(), "Please try again.",
-				Toast.LENGTH_SHORT).show();
+	public void onErrorResponse(VolleyError error) {
+		Toast.makeText(getSherlockActivity(),
+				"Get Crops info:" + error.toString(), Toast.LENGTH_SHORT)
+				.show();
 	}
 
 	@Override
