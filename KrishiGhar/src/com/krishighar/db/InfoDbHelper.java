@@ -8,6 +8,7 @@ import android.content.Context;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.Dao.CreateOrUpdateStatus;
 import com.j256.ormlite.table.TableUtils;
 import com.krishighar.api.models.PushedInfo;
 import com.krishighar.db.models.Info;
@@ -45,7 +46,6 @@ public class InfoDbHelper {
 			TableUtils.clearTable(mInfoTagDao.getConnectionSource(),
 					InfoTag.class);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -57,8 +57,10 @@ public class InfoDbHelper {
 			infoTagRow.setInfo_id(info.getId());
 			infoTagRow.setTag(tag);
 			try {
-				mDao.createOrUpdate(info);
-				mInfoTagDao.createOrUpdate(infoTagRow);
+				CreateOrUpdateStatus status = mDao.createOrUpdate(info);
+				if (status.isCreated()) {
+					mInfoTagDao.createOrUpdate(infoTagRow);
+				}
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -89,12 +91,13 @@ public class InfoDbHelper {
 		}
 	}
 
-	public ArrayList<Info> getAllInfo(String tag) {
+	@SuppressWarnings("deprecation")
+	public ArrayList<Info> getAllInfo(String tag, int startRow) {
 		ArrayList<Info> infos = new ArrayList<Info>();
 		List<Info> cropInfo = new ArrayList<Info>();
 		try {
-			List<InfoTag> infoId = mInfoTagDao.queryBuilder().where()
-					.eq(InfoTag.COLUMN_TAG, tag).query();
+			List<InfoTag> infoId = mInfoTagDao.queryBuilder().offset(startRow)
+					.limit(4).where().eq(InfoTag.COLUMN_TAG, tag).query();
 			for (InfoTag id : infoId) {
 				cropInfo = mDao.queryBuilder().where()
 						.eq(Info.COLUMN_ID, id.getInfo_id()).query();
