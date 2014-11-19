@@ -52,4 +52,18 @@ public class CropDbHelper {
 			return new ArrayList<Crop>();
 		}
 	}
+
+	public List<String> getTags() {
+		List<String> tags = new ArrayList<String>();
+		try {
+			List<Crop> crops = mDao.queryBuilder()
+					.selectColumns(Crop.COLUMN_CROP_TAG).query();
+			for (Crop crop : crops) {
+				tags.add(crop.getTag());
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return tags;
+	}
 }

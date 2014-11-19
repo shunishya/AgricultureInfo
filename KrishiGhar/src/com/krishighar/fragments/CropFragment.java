@@ -101,8 +101,9 @@ public class CropFragment extends SherlockFragment implements
 	public void onResponse(JSONObject response) {
 		InfoResponse res = (InfoResponse) JsonUtil.readJsonString(
 				response.toString(), InfoResponse.class);
-		// infos.addAll(0, res.getInfos());
+		infos.clear();
 		mInfoDbHelper.addInfo(res.getInfos(), crop.getTag());
+		infos.addAll(mInfoDbHelper.getAllInfo(crop.getTag(), 0));
 		mAdapter.notifyDataSetChanged();
 		lvInfo.onRefreshComplete();
 	}
@@ -117,13 +118,13 @@ public class CropFragment extends SherlockFragment implements
 	@Override
 	public void onRefresh(PullToRefreshBase<ListView> refreshView) {
 		if (refreshView.getCurrentMode() == Mode.PULL_FROM_END) {
-			loadInfoFromDatabase();
+			lvInfo.onRefreshComplete();
 
 		} else {
 			if (Network.isConnected(getSherlockActivity())) {
 				getCropInfo(mAdapter.getLatestTimestamp());
 			} else {
-
+				lvInfo.onRefreshComplete();
 			}
 		}
 
@@ -135,12 +136,14 @@ public class CropFragment extends SherlockFragment implements
 		infos.addAll(addedInfo);
 		mAdapter.notifyDataSetChanged();
 		lvInfo.onRefreshComplete();
-
+		if (addedInfo.isEmpty()) {
+			lvInfo.setMode(Mode.PULL_FROM_START);
+		}
 	}
 
 	@Override
 	public void onLastItemVisible() {
-		lvInfo.onRefreshComplete();
+		loadInfoFromDatabase();
 	}
 
 }

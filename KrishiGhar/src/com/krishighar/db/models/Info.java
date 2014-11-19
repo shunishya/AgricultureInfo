@@ -24,6 +24,21 @@ public class Info {
 	@DatabaseField(id = true)
 	private int id;
 
+	public Info(String titleEn, String bodyEn, long timestamp, String infoFrom,
+			String titleNp, String bodyNp, int id) {
+		setBodyEn(bodyEn);
+		setBodyNp(bodyNp);
+		setId(id);
+		setInfoFrom(infoFrom);
+		setTimestamp(timestamp);
+		setTitleEn(titleEn);
+		setTitleNp(titleNp);
+	}
+
+	public Info() {
+
+	}
+
 	public String getTitleEn() {
 		return titleEn;
 	}
