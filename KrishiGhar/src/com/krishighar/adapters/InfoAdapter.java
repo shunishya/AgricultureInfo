@@ -70,6 +70,10 @@ public class InfoAdapter extends ArrayAdapter<Info> {
 
 	}
 
+	public String getLatestTimestamp() {
+		return getItem(0).getTimestamp() + "";
+	}
+
 	class ViewHolder {
 		public TextView tvTitle;
 		public TextView tvInfo;

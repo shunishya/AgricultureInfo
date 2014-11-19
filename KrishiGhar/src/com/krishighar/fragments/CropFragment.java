@@ -31,6 +31,7 @@ import com.krishighar.db.models.Crop;
 import com.krishighar.db.models.Info;
 import com.krishighar.gcm.AppUtil;
 import com.krishighar.utils.JsonUtil;
+import com.krishighar.utils.Network;
 
 public class CropFragment extends SherlockFragment implements
 		Listener<JSONObject>, ErrorListener, OnRefreshListener<ListView>,
@@ -57,7 +58,7 @@ public class CropFragment extends SherlockFragment implements
 				container, false);
 		lvInfo = (PullToRefreshListView) rootView.findViewById(R.id.lvInfo);
 		lvInfo.setMode(Mode.BOTH);
-
+		lvInfo.getLoadingLayoutProxy().setRefreshingLabel("Loading...");
 		infos = new ArrayList<Info>();
 		mInfoDbHelper = new InfoDbHelper(getSherlockActivity());
 
@@ -66,12 +67,11 @@ public class CropFragment extends SherlockFragment implements
 		if (mInfoDbHelper.isTableEmpty()) {
 			getCropInfo(System.currentTimeMillis() + "");
 		} else {
-			infos.addAll(mInfoDbHelper.getAllInfo(crop.getTag()));
+			infos.addAll(mInfoDbHelper.getAllInfo(crop.getTag(), 0));
 			mAdapter.notifyDataSetChanged();
 		}
 		lvInfo.setOnRefreshListener(this);
 		lvInfo.setOnLastItemVisibleListener(this);
-
 		return rootView;
 	}
 
@@ -101,9 +101,10 @@ public class CropFragment extends SherlockFragment implements
 	public void onResponse(JSONObject response) {
 		InfoResponse res = (InfoResponse) JsonUtil.readJsonString(
 				response.toString(), InfoResponse.class);
-		infos.addAll(res.getInfos());
+		// infos.addAll(0, res.getInfos());
 		mInfoDbHelper.addInfo(res.getInfos(), crop.getTag());
 		mAdapter.notifyDataSetChanged();
+		lvInfo.onRefreshComplete();
 	}
 
 	@Override
@@ -115,11 +116,31 @@ public class CropFragment extends SherlockFragment implements
 
 	@Override
 	public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+		if (refreshView.getCurrentMode() == Mode.PULL_FROM_END) {
+			loadInfoFromDatabase();
+
+		} else {
+			if (Network.isConnected(getSherlockActivity())) {
+				getCropInfo(mAdapter.getLatestTimestamp());
+			} else {
+
+			}
+		}
+
+	}
+
+	private void loadInfoFromDatabase() {
+		ArrayList<Info> addedInfo = mInfoDbHelper.getAllInfo(crop.getTag(),
+				mAdapter.getCount());
+		infos.addAll(addedInfo);
+		mAdapter.notifyDataSetChanged();
 		lvInfo.onRefreshComplete();
+
 	}
 
 	@Override
 	public void onLastItemVisible() {
 		lvInfo.onRefreshComplete();
 	}
+
 }
