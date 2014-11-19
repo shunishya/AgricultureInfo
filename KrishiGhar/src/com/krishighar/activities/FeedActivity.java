@@ -19,6 +19,7 @@ import com.krishighar.R;
 import com.krishighar.adapters.CropsPagerAdapter;
 import com.krishighar.db.CropDbHelper;
 import com.krishighar.db.models.Crop;
+import com.krishighar.fragments.LanguageChooseFrag;
 import com.krishighar.utils.AgricultureInfoPreference;
 import com.krishighar.utils.StringHelper;
 
@@ -38,6 +39,7 @@ public class FeedActivity extends SherlockFragmentActivity {
 		mActionBar = getSupportActionBar();
 		mPrefs = new AgricultureInfoPreference(this);
 		lang_id = mPrefs.getLanguage();
+		isLanguageEn = lang_id == LanguageChooseFrag.ENGLISH ? true : false;
 		mActionBar.setTitle(StringHelper.getAppName(lang_id));
 		crops = new CropDbHelper(this).getCrops();
 		FragmentPagerAdapter mPagerAdapter = new CropsPagerAdapter(
@@ -145,9 +147,11 @@ public class FeedActivity extends SherlockFragmentActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		boolean isLanguageChanged = lang_id == mPrefs.getLanguage() ? false
-				: true;
+		boolean isLanguageChanged = (lang_id == mPrefs.getLanguage() ? false
+				: true);
 		if (isLanguageChanged) {
+			lang_id = mPrefs.getLanguage();
+			isLanguageEn = lang_id == LanguageChooseFrag.ENGLISH ? true : false;
 			if (crops.size() > 1) {
 				for (int i = 0; i < crops.size(); i++) {
 					if (isLanguageEn) {

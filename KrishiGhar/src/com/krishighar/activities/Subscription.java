@@ -90,6 +90,13 @@ public class Subscription extends SherlockFragmentActivity implements
 		return true;
 	}
 
+	@Override
+	public void onBackPressed() {
+		btnTryAgain.setVisibility(View.GONE);
+		frag.setVisibility(View.VISIBLE);
+		super.onBackPressed();
+	}
+
 	public void saveSubscribedItem(List<Crop> crops) {
 		if (crops == null) {
 			Toast.makeText(this, "No crops Selected", Toast.LENGTH_LONG).show();
