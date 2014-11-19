@@ -1,20 +1,19 @@
 package com.krishighar.db;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.Context;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.Dao.CreateOrUpdateStatus;
 import com.j256.ormlite.dao.GenericRawResults;
 import com.j256.ormlite.dao.RawRowMapper;
 import com.j256.ormlite.table.TableUtils;
 import com.krishighar.api.models.PushedInfo;
 import com.krishighar.db.models.Info;
 import com.krishighar.db.models.InfoTag;
-
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class InfoDbHelper {
 	private Dao<Info, Integer> mDao;
@@ -60,11 +59,11 @@ public class InfoDbHelper {
 			InfoTag infoTagRow = new InfoTag();
 			infoTagRow.setInfo_id(info.getId());
 			infoTagRow.setTag(tag);
+			infoTagRow.setId(String.valueOf(info.getId()) + tag);
 			try {
-				CreateOrUpdateStatus status = mDao.createOrUpdate(info);
-				if (status.isCreated()) {
-					mInfoTagDao.createOrUpdate(infoTagRow);
-				}
+				mDao.createOrUpdate(info);
+				mInfoTagDao.createOrUpdate(infoTagRow);
+
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -89,6 +88,7 @@ public class InfoDbHelper {
 					InfoTag infoTagRow = new InfoTag();
 					infoTagRow.setInfo_id(info.getId());
 					infoTagRow.setTag(tag);
+					infoTagRow.setId(String.valueOf(info.getId()) + tag);
 					mInfoTagDao.createOrUpdate(infoTagRow);
 				}
 			}
@@ -125,7 +125,7 @@ public class InfoDbHelper {
 		try {
 			GenericRawResults<Info> resultRaw = mDao
 					.queryRaw(
-							"SELECT  a.titleEn,a.bodyEn,a.timestamp,a.infoFrom,a.titleNp,a.bodyNp,a.id FROM _info a, _info_tag b WHERE b.tag='"
+							"SELECT DISTINCT a.titleEn,a.bodyEn,a.timestamp,a.infoFrom,a.titleNp,a.bodyNp,a.id FROM _info a, _info_tag b WHERE b.tag='"
 									+ tag
 									+ "' AND a.id=b.info_id ORDER BY a.timestamp DESC LIMIT 10 OFFSET "
 									+ startRow, new RawRowMapper<Info>() {

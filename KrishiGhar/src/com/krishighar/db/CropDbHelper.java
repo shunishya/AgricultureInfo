@@ -56,8 +56,7 @@ public class CropDbHelper {
 	public List<String> getTags() {
 		List<String> tags = new ArrayList<String>();
 		try {
-			List<Crop> crops = mDao.queryBuilder()
-					.selectColumns(Crop.COLUMN_CROP_TAG).query();
+			List<Crop> crops = mDao.queryForAll();
 			for (Crop crop : crops) {
 				tags.add(crop.getTag());
 			}

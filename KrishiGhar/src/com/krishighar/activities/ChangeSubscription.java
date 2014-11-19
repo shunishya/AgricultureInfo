@@ -84,6 +84,13 @@ public class ChangeSubscription extends SherlockFragmentActivity implements
 	}
 
 	@Override
+	public void onBackPressed() {
+		btnTryAgain.setVisibility(View.GONE);
+		frag.setVisibility(View.VISIBLE);
+		super.onBackPressed();
+	}
+
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.done_item) {
 			SubsciptionCropsFragment frag = (SubsciptionCropsFragment) getSupportFragmentManager()

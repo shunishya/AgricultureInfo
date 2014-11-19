@@ -61,15 +61,9 @@ public class CropFragment extends SherlockFragment implements
 		lvInfo.getLoadingLayoutProxy().setRefreshingLabel("Loading...");
 		infos = new ArrayList<Info>();
 		mInfoDbHelper = new InfoDbHelper(getSherlockActivity());
-
 		mAdapter = new InfoAdapter(getSherlockActivity(), infos);
 		lvInfo.setAdapter(mAdapter);
-		if (mInfoDbHelper.isTableEmpty()) {
-			getCropInfo(System.currentTimeMillis() + "");
-		} else {
-			infos.addAll(mInfoDbHelper.getAllInfo(crop.getTag(), 0));
-			mAdapter.notifyDataSetChanged();
-		}
+
 		lvInfo.setOnRefreshListener(this);
 		lvInfo.setOnLastItemVisibleListener(this);
 		return rootView;
@@ -111,8 +105,23 @@ public class CropFragment extends SherlockFragment implements
 	@Override
 	public void onResume() {
 		super.onResume();
-		mAdapter.checkLanguage();
-		mAdapter.notifyDataSetChanged();
+
+		if (infos.isEmpty()) {
+			if (mInfoDbHelper.isTableEmpty()) {
+				lvInfo.setRefreshing();
+				getCropInfo(System.currentTimeMillis() + "");
+			} else {
+				infos.addAll(mInfoDbHelper.getAllInfo(crop.getTag(), 0));
+				if (infos.isEmpty()) {
+					lvInfo.setRefreshing();
+					getCropInfo(System.currentTimeMillis() + "");
+				}
+				mAdapter.notifyDataSetChanged();
+			}
+		} else {
+			mAdapter.checkLanguage();
+			mAdapter.notifyDataSetChanged();
+		}
 	}
 
 	@Override
@@ -122,7 +131,12 @@ public class CropFragment extends SherlockFragment implements
 
 		} else {
 			if (Network.isConnected(getSherlockActivity())) {
-				getCropInfo(mAdapter.getLatestTimestamp());
+				if (mAdapter.getCount() > 0) {
+					getCropInfo(mAdapter.getLatestTimestamp());
+				} else {
+					getCropInfo("0");
+				}
+
 			} else {
 				lvInfo.onRefreshComplete();
 			}

@@ -9,18 +9,25 @@ public class InfoTag {
 
 	public static String COLUMN_TAG = "tag";
 
-	@DatabaseField(generatedId = true)
-	private int id;
+	@DatabaseField(id = true)
+	private String id;
 	@DatabaseField
 	private int info_id;
 	@DatabaseField
 	private String tag;
 
-	public int getId() {
+	/**
+	 * @return the id
+	 */
+	public String getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	/**
+	 * @param id
+	 *            the id to set
+	 */
+	public void setId(String id) {
 		this.id = id;
 	}
 
