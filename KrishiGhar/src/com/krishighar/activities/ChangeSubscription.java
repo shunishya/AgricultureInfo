@@ -45,6 +45,8 @@ public class ChangeSubscription extends SherlockFragmentActivity implements
 	private String tag_json_obj = "json_obj_req_update_info";
 	private Button btnTryAgain;
 	private View frag;
+	private String locationName;
+	private int locationId;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -130,6 +132,8 @@ public class ChangeSubscription extends SherlockFragmentActivity implements
 	}
 
 	public void onSuccessfullUpdate() {
+		new AgricultureInfoPreference(this).setLocation(locationName,
+				locationId);
 		startActivity(new Intent(this, FeedActivity.class));
 		finish();
 	}
@@ -154,11 +158,42 @@ public class ChangeSubscription extends SherlockFragmentActivity implements
 
 	@Override
 	public void onLocationSelected(String locationName, int locationId) {
-		new AgricultureInfoPreference(this).setLocation(locationName,
-				locationId);
+		setLocationId(locationId);
+		setLocationName(locationName);
+
 		getSupportFragmentManager().beginTransaction().addToBackStack(null)
 				.replace(R.id.container, new SubsciptionCropsFragment(this))
 				.commit();
+	}
+
+	/**
+	 * @return the locationName
+	 */
+	public String getLocationName() {
+		return locationName;
+	}
+
+	/**
+	 * @param locationName
+	 *            the locationName to set
+	 */
+	public void setLocationName(String locationName) {
+		this.locationName = locationName;
+	}
+
+	/**
+	 * @return the locationId
+	 */
+	public int getLocationId() {
+		return locationId;
+	}
+
+	/**
+	 * @param locationId
+	 *            the locationId to set
+	 */
+	public void setLocationId(int locationId) {
+		this.locationId = locationId;
 	}
 
 	@Override

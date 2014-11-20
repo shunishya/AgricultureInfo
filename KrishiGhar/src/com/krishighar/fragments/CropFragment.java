@@ -30,6 +30,7 @@ import com.krishighar.db.InfoDbHelper;
 import com.krishighar.db.models.Crop;
 import com.krishighar.db.models.Info;
 import com.krishighar.gcm.AppUtil;
+import com.krishighar.utils.AgricultureInfoPreference;
 import com.krishighar.utils.JsonUtil;
 import com.krishighar.utils.Network;
 
@@ -44,6 +45,9 @@ public class CropFragment extends SherlockFragment implements
 	private InfoDbHelper mInfoDbHelper;
 	private InfoAdapter mAdapter;
 	private ArrayList<Info> infos;
+	private AgricultureInfoPreference mPrefs;
+
+	private boolean isPulledNewInfo;
 
 	public static CropFragment newInstance(Crop id) {
 		CropFragment fragment = new CropFragment();
@@ -56,6 +60,7 @@ public class CropFragment extends SherlockFragment implements
 			Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_crops_description,
 				container, false);
+		mPrefs = new AgricultureInfoPreference(getSherlockActivity());
 		lvInfo = (PullToRefreshListView) rootView.findViewById(R.id.lvInfo);
 		lvInfo.setMode(Mode.BOTH);
 		lvInfo.getLoadingLayoutProxy().setRefreshingLabel("Loading...");
@@ -70,7 +75,8 @@ public class CropFragment extends SherlockFragment implements
 	}
 
 	private void getCropInfo(String timestamp) {
-		String url = KrishiGharUrls.GET_CROP_INFO_URL + crop.getTag() + "/"
+		isPulledNewInfo = true;
+		String url = KrishiGharUrls.GET_CROP_INFO_URL + crop.getTag() + "/n/"
 				+ timestamp;
 		JsonObjectRequest jsonRequest = new JsonObjectRequest(Method.GET, url,
 				null, this, this);
@@ -95,9 +101,17 @@ public class CropFragment extends SherlockFragment implements
 	public void onResponse(JSONObject response) {
 		InfoResponse res = (InfoResponse) JsonUtil.readJsonString(
 				response.toString(), InfoResponse.class);
-		infos.clear();
+
 		mInfoDbHelper.addInfo(res.getInfos(), crop.getTag());
-		infos.addAll(mInfoDbHelper.getAllInfo(crop.getTag(), 0));
+		if (isPulledNewInfo) {
+			infos.clear();
+			infos.addAll(mInfoDbHelper.getAllInfo(crop.getTag(), 0));
+		} else {
+			infos.addAll(res.getInfos());
+			if (res.getInfos().isEmpty()) {
+				mPrefs.setPulledAllOldInfo(crop.getTag(), true);
+			}
+		}
 		mAdapter.notifyDataSetChanged();
 		lvInfo.onRefreshComplete();
 	}
@@ -109,12 +123,12 @@ public class CropFragment extends SherlockFragment implements
 		if (infos.isEmpty()) {
 			if (mInfoDbHelper.isTableEmpty()) {
 				lvInfo.setRefreshing();
-				getCropInfo(System.currentTimeMillis() + "");
+				getInfoInitially();
 			} else {
 				infos.addAll(mInfoDbHelper.getAllInfo(crop.getTag(), 0));
 				if (infos.isEmpty()) {
 					lvInfo.setRefreshing();
-					getCropInfo(System.currentTimeMillis() + "");
+					getInfoInitially();
 				}
 				mAdapter.notifyDataSetChanged();
 			}
@@ -151,13 +165,34 @@ public class CropFragment extends SherlockFragment implements
 		mAdapter.notifyDataSetChanged();
 		lvInfo.onRefreshComplete();
 		if (addedInfo.isEmpty()) {
-			lvInfo.setMode(Mode.PULL_FROM_START);
+			if (mPrefs.isPullAllOldInfo(crop.getTag())) {
+				lvInfo.setMode(Mode.PULL_FROM_START);
+			} else {
+				getOldInfo(mAdapter.getOldestTimeStamp());
+			}
 		}
 	}
 
 	@Override
 	public void onLastItemVisible() {
 		loadInfoFromDatabase();
+	}
+
+	public void getInfoInitially() {
+		isPulledNewInfo = true;
+		String url = KrishiGharUrls.GET_CROP_INFO_URL + crop.getTag();
+		JsonObjectRequest jsonRequest = new JsonObjectRequest(Method.GET, url,
+				null, this, this);
+		AppUtil.getInstance().addToRequestQueue(jsonRequest, tag_json_obj);
+	}
+
+	public void getOldInfo(String timestamp) {
+		isPulledNewInfo = false;
+		String url = KrishiGharUrls.GET_CROP_INFO_URL + crop.getTag() + "/o/"
+				+ timestamp;
+		JsonObjectRequest jsonRequest = new JsonObjectRequest(Method.GET, url,
+				null, this, this);
+		AppUtil.getInstance().addToRequestQueue(jsonRequest, tag_json_obj);
 	}
 
 }
