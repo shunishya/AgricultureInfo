@@ -15,6 +15,7 @@ public class AgricultureInfoPreference {
 
 	private static final String ISLOGGEDIN = "is_loggedin";
 	private static final String GCM_REGISTRATION_ID = "_gcm_registration_id";
+	private static final String IS_SUBSCRIPTION_CHANGE = "_is_subscription_change";
 
 	public AgricultureInfoPreference(Context context) {
 		mSharedPreferences = context.getSharedPreferences(PREFS_NAME,
@@ -89,6 +90,16 @@ public class AgricultureInfoPreference {
 	public void setDeviceId(String deviceID) {
 		mEditor = mSharedPreferences.edit();
 		mEditor.putString(DEVICE_ID, deviceID);
+		mEditor.commit();
+	}
+
+	public boolean isSubscriptionChange() {
+		return mSharedPreferences.getBoolean(IS_SUBSCRIPTION_CHANGE, false);
+	}
+
+	public void setIsSubscriptionChange(boolean isChanged) {
+		mEditor = mSharedPreferences.edit();
+		mEditor.putBoolean(IS_SUBSCRIPTION_CHANGE, isChanged);
 		mEditor.commit();
 	}
 

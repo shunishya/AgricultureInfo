@@ -1,14 +1,7 @@
 package com.krishighar.activities;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -35,6 +28,12 @@ import com.krishighar.interfaces.SubcriptionListener;
 import com.krishighar.utils.AgricultureInfoPreference;
 import com.krishighar.utils.DeviceUtils;
 import com.krishighar.utils.JsonUtil;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ChangeSubscription extends SherlockFragmentActivity implements
 		Listener<JSONObject>, ErrorListener, SubcriptionListener {
@@ -130,6 +129,7 @@ public class ChangeSubscription extends SherlockFragmentActivity implements
 	}
 
 	public void onSuccessfullUpdate() {
+		mPrefs.setIsSubscriptionChange(true);
 		startActivity(new Intent(this, FeedActivity.class));
 		finish();
 	}
@@ -143,8 +143,6 @@ public class ChangeSubscription extends SherlockFragmentActivity implements
 
 	@Override
 	public void onResponse(JSONObject arg0) {
-		Intent intent = new Intent();
-		LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 		new InfoDbHelper(this).clearTable();
 		CropDbHelper cropsDbHelper = new CropDbHelper(this);
 		cropsDbHelper.clearTable();

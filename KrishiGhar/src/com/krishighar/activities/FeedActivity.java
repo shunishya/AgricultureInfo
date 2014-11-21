@@ -28,6 +28,8 @@ public class FeedActivity extends SherlockFragmentActivity {
 	private List<Crop> crops;
 	private ViewPager mPager;
 	private AgricultureInfoPreference mPrefs;
+	private CropDbHelper mCropsDbHelper;
+	private FragmentPagerAdapter mPagerAdapter;
 
 	private boolean isLanguageEn;
 	private int lang_id;
@@ -41,9 +43,10 @@ public class FeedActivity extends SherlockFragmentActivity {
 		lang_id = mPrefs.getLanguage();
 		isLanguageEn = lang_id == LanguageChooseFrag.ENGLISH ? true : false;
 		mActionBar.setTitle(StringHelper.getAppName(lang_id));
-		crops = new CropDbHelper(this).getCrops();
-		FragmentPagerAdapter mPagerAdapter = new CropsPagerAdapter(
-				getSupportFragmentManager(), crops);
+		mCropsDbHelper = new CropDbHelper(this);
+		crops = mCropsDbHelper.getCrops();
+		mPagerAdapter = new CropsPagerAdapter(getSupportFragmentManager(),
+				crops);
 		mPager = (ViewPager) findViewById(R.id.pager);
 		mPager.setOnPageChangeListener(onPageChangeListener);
 		mPager.setAdapter(mPagerAdapter);
