@@ -74,6 +74,10 @@ public class InfoAdapter extends ArrayAdapter<Info> {
 		return getItem(0).getTimestamp() + "";
 	}
 
+	public String getOldestTimeStamp() {
+		return getItem(getCount() - 1).getTimestamp() + "";
+	}
+
 	class ViewHolder {
 		public TextView tvTitle;
 		public TextView tvInfo;

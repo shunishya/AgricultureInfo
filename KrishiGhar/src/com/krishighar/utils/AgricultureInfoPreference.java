@@ -15,7 +15,7 @@ public class AgricultureInfoPreference {
 
 	private static final String ISLOGGEDIN = "is_loggedin";
 	private static final String GCM_REGISTRATION_ID = "_gcm_registration_id";
-	private static final String IS_SUBSCRIPTION_CHANGE = "_is_subscription_change";
+	private static final String IS_PULLED_ALL_OLD_INFO = "is_pulled_all_info";
 
 	public AgricultureInfoPreference(Context context) {
 		mSharedPreferences = context.getSharedPreferences(PREFS_NAME,
@@ -93,13 +93,14 @@ public class AgricultureInfoPreference {
 		mEditor.commit();
 	}
 
-	public boolean isSubscriptionChange() {
-		return mSharedPreferences.getBoolean(IS_SUBSCRIPTION_CHANGE, false);
+	public boolean isPullAllOldInfo(String forCrop) {
+		return mSharedPreferences.getBoolean(IS_PULLED_ALL_OLD_INFO + forCrop,
+				false);
 	}
 
-	public void setIsSubscriptionChange(boolean isChanged) {
+	public void setPulledAllOldInfo(String forCrop, boolean isPulled) {
 		mEditor = mSharedPreferences.edit();
-		mEditor.putBoolean(IS_SUBSCRIPTION_CHANGE, isChanged);
+		mEditor.putBoolean(IS_PULLED_ALL_OLD_INFO + forCrop, isPulled);
 		mEditor.commit();
 	}
 
