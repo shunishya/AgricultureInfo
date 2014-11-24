@@ -27,7 +27,7 @@ import com.krishighar.adapters.InfoAdapter;
 import com.krishighar.api.KrishiGharUrls;
 import com.krishighar.api.models.InfoResponse;
 import com.krishighar.db.InfoDbHelper;
-import com.krishighar.db.models.Crop;
+import com.krishighar.db.models.AgricultureItem;
 import com.krishighar.db.models.Info;
 import com.krishighar.gcm.AppUtil;
 import com.krishighar.utils.AgricultureInfoPreference;
@@ -41,7 +41,7 @@ public class CropFragment extends SherlockFragment implements
 	private String tag_json_obj = "json_obj_req_get_info";
 
 	private PullToRefreshListView lvInfo;
-	private Crop crop;
+	private AgricultureItem crop;
 	private InfoDbHelper mInfoDbHelper;
 	private InfoAdapter mAdapter;
 	private ArrayList<Info> infos;
@@ -49,7 +49,7 @@ public class CropFragment extends SherlockFragment implements
 
 	private boolean isPulledNewInfo;
 
-	public static CropFragment newInstance(Crop id) {
+	public static CropFragment newInstance(AgricultureItem id) {
 		CropFragment fragment = new CropFragment();
 		fragment.crop = id;
 		return fragment;
@@ -101,15 +101,16 @@ public class CropFragment extends SherlockFragment implements
 	public void onResponse(JSONObject response) {
 		InfoResponse res = (InfoResponse) JsonUtil.readJsonString(
 				response.toString(), InfoResponse.class);
-
-		mInfoDbHelper.addInfo(res.getInfos(), crop.getTag());
-		if (isPulledNewInfo) {
-			infos.clear();
-			infos.addAll(mInfoDbHelper.getAllInfo(crop.getTag(), 0));
-		} else {
-			infos.addAll(res.getInfos());
-			if (res.getInfos().isEmpty()) {
-				mPrefs.setPulledAllOldInfo(crop.getTag(), true);
+		if (res.getInfos() != null) {
+			mInfoDbHelper.addInfo(res.getInfos(), crop.getTag());
+			if (isPulledNewInfo) {
+				infos.clear();
+				infos.addAll(mInfoDbHelper.getAllInfo(crop.getTag(), 0));
+			} else {
+				infos.addAll(res.getInfos());
+				if (res.getInfos().isEmpty()) {
+					mPrefs.setPulledAllOldInfo(crop.getTag(), true);
+				}
 			}
 		}
 		mAdapter.notifyDataSetChanged();

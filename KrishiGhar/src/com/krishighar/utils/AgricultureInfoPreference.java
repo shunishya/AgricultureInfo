@@ -11,7 +11,6 @@ public class AgricultureInfoPreference {
 	private static final String LOCATION_NAME = "location";
 	private static final String LOCATION_ID = "location_id";
 	private static final String PREFFERED_LANGUAGE = "preffered_lang";
-	private static final String DEVICE_ID = "_deviceId";
 
 	private static final String ISLOGGEDIN = "is_loggedin";
 	private static final String GCM_REGISTRATION_ID = "_gcm_registration_id";
@@ -39,9 +38,14 @@ public class AgricultureInfoPreference {
 		mEditor.commit();
 	}
 
-	public void setLocation(String locationName, int locationId) {
+	public void setLocation(String locationName) {
 		mEditor = mSharedPreferences.edit();
 		mEditor.putString(LOCATION_NAME, locationName);
+		mEditor.commit();
+	}
+
+	public void setLocationId(int locationId) {
+		mEditor = mSharedPreferences.edit();
 		mEditor.putInt(LOCATION_ID, locationId);
 		mEditor.commit();
 	}
@@ -81,16 +85,6 @@ public class AgricultureInfoPreference {
 
 	public int getLanguage() {
 		return mSharedPreferences.getInt(PREFFERED_LANGUAGE, -1);
-	}
-
-	public String getDeviceId() {
-		return mSharedPreferences.getString(DEVICE_ID, null);
-	}
-
-	public void setDeviceId(String deviceID) {
-		mEditor = mSharedPreferences.edit();
-		mEditor.putString(DEVICE_ID, deviceID);
-		mEditor.commit();
 	}
 
 	public boolean isPullAllOldInfo(String forCrop) {

@@ -11,4 +11,6 @@ public interface SubcriptionListener {
 
 	public void onRequest();
 
+	public int getLocationId();
+
 }

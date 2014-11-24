@@ -9,16 +9,16 @@ import android.content.Context;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.table.TableUtils;
-import com.krishighar.db.models.Crop;
+import com.krishighar.db.models.AgricultureItem;
 
-public class CropDbHelper {
-	private Dao<Crop, Integer> mDao;
+public class AgricultureItemDbHelper {
+	private Dao<AgricultureItem, Integer> mDao;
 
-	public CropDbHelper(Context ctx) {
+	public AgricultureItemDbHelper(Context ctx) {
 		DbHelper dbHelper = (DbHelper) OpenHelperManager.getHelper(ctx,
 				DbHelper.class);
 		try {
-			this.mDao = dbHelper.getDao(Crop.class);
+			this.mDao = dbHelper.getDao(AgricultureItem.class);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -26,17 +26,17 @@ public class CropDbHelper {
 
 	public void clearTable() {
 		try {
-			TableUtils.clearTable(mDao.getConnectionSource(), Crop.class);
+			TableUtils.clearTable(mDao.getConnectionSource(),
+					AgricultureItem.class);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
-	public void addCrops(List<Crop> crops) {
+	public void addItem(List<AgricultureItem> items) {
 		try {
-			TableUtils.clearTable(mDao.getConnectionSource(), Crop.class);
-			for (Crop crop : crops) {
+			for (AgricultureItem crop : items) {
 				mDao.create(crop);
 			}
 		} catch (SQLException e1) {
@@ -44,21 +44,21 @@ public class CropDbHelper {
 		}
 	}
 
-	public List<Crop> getCrops() {
+	public List<AgricultureItem> getItems() {
 		try {
 			return mDao.queryForAll();
 		} catch (SQLException e) {
 			e.printStackTrace();
-			return new ArrayList<Crop>();
+			return new ArrayList<AgricultureItem>();
 		}
 	}
 
 	public List<String> getTags() {
 		List<String> tags = new ArrayList<String>();
 		try {
-			List<Crop> crops = mDao.queryForAll();
-			for (Crop crop : crops) {
-				tags.add(crop.getTag());
+			List<AgricultureItem> items = mDao.queryForAll();
+			for (AgricultureItem item : items) {
+				tags.add(item.getTag());
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

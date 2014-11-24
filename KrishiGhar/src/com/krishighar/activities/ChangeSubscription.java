@@ -18,9 +18,9 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.krishighar.R;
 import com.krishighar.api.KrishiGharUrls;
 import com.krishighar.api.models.SubscribtionRequest;
-import com.krishighar.db.CropDbHelper;
+import com.krishighar.db.AgricultureItemDbHelper;
 import com.krishighar.db.InfoDbHelper;
-import com.krishighar.db.models.Crop;
+import com.krishighar.db.models.AgricultureItem;
 import com.krishighar.fragments.SubsciptionCropsFragment;
 import com.krishighar.fragments.SubscriptionLocationFragment;
 import com.krishighar.gcm.AppUtil;
@@ -38,14 +38,14 @@ import java.util.List;
 public class ChangeSubscription extends SherlockFragmentActivity implements
 		Listener<JSONObject>, ErrorListener, SubcriptionListener {
 	boolean doneVisible;
-	private AgricultureInfoPreference mPrefs;
-	private ArrayList<Crop> crops;
+	private ArrayList<AgricultureItem> agriculturalItems;
 
 	private String tag_json_obj = "json_obj_req_update_info";
 	private Button btnTryAgain;
 	private View frag;
 	private String locationName;
 	private int locationId;
+	private AgricultureInfoPreference mPrefs;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +53,7 @@ public class ChangeSubscription extends SherlockFragmentActivity implements
 		setContentView(R.layout.activity_subscription);
 		btnTryAgain = (Button) findViewById(R.id.btnTryAgain);
 		frag = findViewById(R.id.container);
-		mPrefs = new AgricultureInfoPreference(ChangeSubscription.this);
+		mPrefs = new AgricultureInfoPreference(this);
 		getSupportFragmentManager()
 				.beginTransaction()
 				.replace(R.id.container, new SubscriptionLocationFragment(this))
@@ -102,19 +102,19 @@ public class ChangeSubscription extends SherlockFragmentActivity implements
 		return true;
 	}
 
-	public void saveSubscribedItem(List<Crop> crops) {
-		if (crops == null) {
+	public void saveSubscribedItem(List<AgricultureItem> items) {
+		if (items == null) {
 			Toast.makeText(this, "No crops Selected", Toast.LENGTH_LONG).show();
-		} else if (crops.isEmpty()) {
+		} else if (items.isEmpty()) {
 			Toast.makeText(this, "No crops Selected", Toast.LENGTH_LONG).show();
 		} else {
-			this.crops = (ArrayList<Crop>) crops;
+			this.agriculturalItems = (ArrayList<AgricultureItem>) items;
 			ArrayList<String> tags = new ArrayList<String>();
-			for (Crop crop : crops) {
-				tags.add(crop.getTag());
+			for (AgricultureItem item : items) {
+				tags.add(item.getTag());
 			}
 			SubscribtionRequest request = new SubscribtionRequest();
-			request.setDeviceId(mPrefs.getDeviceId());
+			request.setDeviceId(DeviceUtils.getUniqueDeviceID(this));
 			request.setPhoneNumber(DeviceUtils.getPhoneNumber(this));
 			request.setTags(tags);
 			JSONObject objectRequest = null;
@@ -131,8 +131,8 @@ public class ChangeSubscription extends SherlockFragmentActivity implements
 	}
 
 	public void onSuccessfullUpdate() {
-		new AgricultureInfoPreference(this).setLocation(locationName,
-				locationId);
+		mPrefs.setLocation(locationName);
+		mPrefs.setLocationId(locationId);
 		startActivity(new Intent(this, FeedActivity.class));
 		finish();
 	}
@@ -147,9 +147,10 @@ public class ChangeSubscription extends SherlockFragmentActivity implements
 	@Override
 	public void onResponse(JSONObject arg0) {
 		new InfoDbHelper(this).clearTable();
-		CropDbHelper cropsDbHelper = new CropDbHelper(this);
-		cropsDbHelper.clearTable();
-		cropsDbHelper.addCrops(crops);
+		AgricultureItemDbHelper agricultureItemDbHelper = new AgricultureItemDbHelper(
+				this);
+		agricultureItemDbHelper.clearTable();
+		agricultureItemDbHelper.addItem(agriculturalItems);
 		onSuccessfullUpdate();
 	}
 

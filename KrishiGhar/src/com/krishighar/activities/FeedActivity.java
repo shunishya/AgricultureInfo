@@ -17,15 +17,15 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.krishighar.R;
 import com.krishighar.adapters.CropsPagerAdapter;
-import com.krishighar.db.CropDbHelper;
-import com.krishighar.db.models.Crop;
+import com.krishighar.db.AgricultureItemDbHelper;
+import com.krishighar.db.models.AgricultureItem;
 import com.krishighar.fragments.LanguageChooseFrag;
 import com.krishighar.utils.AgricultureInfoPreference;
 import com.krishighar.utils.StringHelper;
 
 public class FeedActivity extends SherlockFragmentActivity {
 	private ActionBar mActionBar;
-	private List<Crop> crops;
+	private List<AgricultureItem> crops;
 	private ViewPager mPager;
 	private AgricultureInfoPreference mPrefs;
 	private CropDbHelper mCropsDbHelper;
@@ -43,10 +43,9 @@ public class FeedActivity extends SherlockFragmentActivity {
 		lang_id = mPrefs.getLanguage();
 		isLanguageEn = lang_id == LanguageChooseFrag.ENGLISH ? true : false;
 		mActionBar.setTitle(StringHelper.getAppName(lang_id));
-		mCropsDbHelper = new CropDbHelper(this);
-		crops = mCropsDbHelper.getCrops();
-		mPagerAdapter = new CropsPagerAdapter(getSupportFragmentManager(),
-				crops);
+		crops = new AgricultureItemDbHelper(this).getItems();
+		FragmentPagerAdapter mPagerAdapter = new CropsPagerAdapter(
+				getSupportFragmentManager(), crops);
 		mPager = (ViewPager) findViewById(R.id.pager);
 		mPager.setOnPageChangeListener(onPageChangeListener);
 		mPager.setAdapter(mPagerAdapter);
@@ -83,7 +82,7 @@ public class FeedActivity extends SherlockFragmentActivity {
 		mActionBar.setHomeButtonEnabled(true);
 		mActionBar.setDisplayShowTitleEnabled(true);
 		if (crops.size() > 1) {
-			for (Crop crop : crops) {
+			for (AgricultureItem crop : crops) {
 				ActionBar.Tab tab = mActionBar
 						.newTab()
 						.setText(

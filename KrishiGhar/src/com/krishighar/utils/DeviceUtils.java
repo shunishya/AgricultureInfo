@@ -29,7 +29,7 @@ public class DeviceUtils {
 		if (identifier == null || identifier.length() == 0)
 			identifier = Secure.getString(context.getContentResolver(),
 					Secure.ANDROID_ID);
-		identifier = identifier + new Random().nextInt(1000);
+		//identifier = identifier + new Random().nextInt(1000);
 		return identifier;
 	}
 

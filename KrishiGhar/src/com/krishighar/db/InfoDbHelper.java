@@ -99,7 +99,7 @@ public class InfoDbHelper {
 	}
 
 	public List<String> getAllTags() {
-		CropDbHelper cropDbHelper = new CropDbHelper(mContext);
+		AgricultureItemDbHelper cropDbHelper = new AgricultureItemDbHelper(mContext);
 		return cropDbHelper.getTags();
 	}
 
