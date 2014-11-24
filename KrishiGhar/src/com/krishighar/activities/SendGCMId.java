@@ -15,22 +15,20 @@ import com.google.android.gcm.GCMRegistrar;
 import com.krishighar.api.KrishiGharUrls;
 import com.krishighar.api.models.SendGCMRegistrationId;
 import com.krishighar.gcm.AppUtil;
-import com.krishighar.utils.AgricultureInfoPreference;
+import com.krishighar.utils.DeviceUtils;
 import com.krishighar.utils.JsonUtil;
 
 public class SendGCMId implements Listener<JSONObject>, ErrorListener {
 	private Context mContext;
 	private String tag_json_obj = "json_obj_req_GCM";
-	private AgricultureInfoPreference mPrefs;
 
 	public SendGCMId(Context context) {
 		this.mContext = context;
-		this.mPrefs = new AgricultureInfoPreference(context);
 	}
 
 	public void sendId() {
 		SendGCMRegistrationId request = new SendGCMRegistrationId();
-		request.setDeviceId(mPrefs.getDeviceId());
+		request.setDeviceId(DeviceUtils.getUniqueDeviceID(mContext));
 		request.setRegId(GCMRegistrar.getRegistrationId(mContext));
 		JSONObject object = null;
 		try {

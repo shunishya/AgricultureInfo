@@ -22,9 +22,17 @@ public class StringHelper {
 
 	public static String getCropdFragTitle(int lang_id) {
 		if (lang_id == LanguageChooseFrag.ENGLISH) {
-			return "Select Crops";
+			return "Select crops and animals";
 		} else {
-			return "अन्न रोज्नुहोस";
+			return "बाली र पशु रोज्नुहोस";
+		}
+	}
+	
+	public static String getListHeaderTitle(int lang_id){
+		if(lang_id==LanguageChooseFrag.ENGLISH){
+			return "touch here to select ";
+		}else{
+			return " रोज्न यहाँ छुनुहोस्";
 		}
 	}
 

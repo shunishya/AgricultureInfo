@@ -7,9 +7,9 @@ import com.j256.ormlite.table.DatabaseTable;
 import com.krishighar.db.DbConf;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@DatabaseTable(tableName = DbConf.TABLE_SUBSCRIPTION_CROPS)
-public class Crop {
-	public static String COLUMN_CROP_TAG = "tag";
+@DatabaseTable(tableName = DbConf.TABLE_SUBSCRIPTION_ITEMS)
+public class AgricultureItem {
+	public static String COLUMN_TAG = "tag";
 
 	public String getNameEn() {
 		return nameEn;
@@ -21,13 +21,15 @@ public class Crop {
 
 	@DatabaseField
 	@JsonProperty("id")
-	private int cropId;
+	private int itemId;
 	@DatabaseField
 	private String nameEn;
 	@DatabaseField
 	private String nameNp;
 	@DatabaseField
 	private String tag;
+	@DatabaseField
+	private int type;
 
 	public String getTag() {
 		return tag;
@@ -41,7 +43,7 @@ public class Crop {
 	 * @return the cropId
 	 */
 	public int getCropId() {
-		return cropId;
+		return itemId;
 	}
 
 	/**
@@ -49,7 +51,7 @@ public class Crop {
 	 *            the cropId to set
 	 */
 	public void setCropId(int cropId) {
-		this.cropId = cropId;
+		this.itemId = cropId;
 	}
 
 	public String getNameNp() {
@@ -58,6 +60,21 @@ public class Crop {
 
 	public void setNameNp(String nameNp) {
 		this.nameNp = nameNp;
+	}
+
+	/**
+	 * @return the type
+	 */
+	public int getType() {
+		return type;
+	}
+
+	/**
+	 * @param type
+	 *            the type to set
+	 */
+	public void setType(int type) {
+		this.type = type;
 	}
 
 }

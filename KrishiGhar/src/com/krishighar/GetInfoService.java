@@ -6,9 +6,9 @@ import com.android.volley.Response.ErrorListener;
 import com.android.volley.Response.Listener;
 import com.android.volley.VolleyError;
 import com.krishighar.api.models.InfoResponse;
-import com.krishighar.db.CropDbHelper;
+import com.krishighar.db.AgricultureItemDbHelper;
 import com.krishighar.db.InfoDbHelper;
-import com.krishighar.db.models.Crop;
+import com.krishighar.db.models.AgricultureItem;
 
 import android.app.Service;
 import android.content.Intent;
@@ -18,16 +18,16 @@ public class GetInfoService extends Service implements Listener<InfoResponse>,
 		ErrorListener {
 
 	private InfoDbHelper mInfoDbHelper;
-	private CropDbHelper mCropDbHelper;
-	private ArrayList<Crop> crops;
+	private AgricultureItemDbHelper mCropDbHelper;
+	private ArrayList<AgricultureItem> crops;
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		mInfoDbHelper = new InfoDbHelper(getApplicationContext());
-		mCropDbHelper = new CropDbHelper(getApplicationContext());
-		crops = new ArrayList<Crop>();
-		crops = (ArrayList<Crop>) mCropDbHelper.getCrops();
+		mCropDbHelper = new AgricultureItemDbHelper(getApplicationContext());
+		crops = new ArrayList<AgricultureItem>();
+		crops = (ArrayList<AgricultureItem>) mCropDbHelper.getItems();
 
 	}
 
@@ -40,7 +40,6 @@ public class GetInfoService extends Service implements Listener<InfoResponse>,
 	@Override
 	public void onErrorResponse(VolleyError error) {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override

@@ -1,5 +1,11 @@
 package com.krishighar.activities;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -18,8 +24,8 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.krishighar.R;
 import com.krishighar.api.KrishiGharUrls;
 import com.krishighar.api.models.SubscribtionRequest;
-import com.krishighar.db.CropDbHelper;
-import com.krishighar.db.models.Crop;
+import com.krishighar.db.AgricultureItemDbHelper;
+import com.krishighar.db.models.AgricultureItem;
 import com.krishighar.fragments.SplashFragment;
 import com.krishighar.fragments.SubsciptionCropsFragment;
 import com.krishighar.gcm.AppUtil;
@@ -29,30 +35,24 @@ import com.krishighar.utils.AgricultureInfoPreference;
 import com.krishighar.utils.DeviceUtils;
 import com.krishighar.utils.JsonUtil;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
-
 public class Subscription extends SherlockFragmentActivity implements
 		Listener<JSONObject>, ErrorListener, SubcriptionListener {
 	boolean doneVisible;
-	private AgricultureInfoPreference mPrefs;
-	private ArrayList<Crop> crops;
+	private ArrayList<AgricultureItem> agriculturalItems;
 	private String tag_json_obj = "json_obj_req_subscribe";
 	private Button btnTryAgain;
 	private View frag;
 	private String locationName;
 	private int locationId;
+	private AgricultureInfoPreference mPrefs;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_subscription);
 		btnTryAgain = (Button) findViewById(R.id.btnTryAgain);
+		mPrefs = new AgricultureInfoPreference(this);
 		frag = findViewById(R.id.container);
-		mPrefs = new AgricultureInfoPreference(Subscription.this);
 		getSupportFragmentManager().beginTransaction()
 				.replace(R.id.container, new SplashFragment()).commit();
 	}
@@ -99,20 +99,19 @@ public class Subscription extends SherlockFragmentActivity implements
 		super.onBackPressed();
 	}
 
-	public void saveSubscribedItem(List<Crop> crops) {
-		if (crops == null) {
+	public void saveSubscribedItem(List<AgricultureItem> items) {
+		if (items == null) {
 			Toast.makeText(this, "No crops Selected", Toast.LENGTH_LONG).show();
-		} else if (crops.isEmpty()) {
+		} else if (items.isEmpty()) {
 			Toast.makeText(this, "No crops Selected", Toast.LENGTH_LONG).show();
 		} else {
-			this.crops = (ArrayList<Crop>) crops;
+			this.agriculturalItems = (ArrayList<AgricultureItem>) items;
 			ArrayList<String> tags = new ArrayList<String>();
-			for (Crop crop : crops) {
-				tags.add(crop.getTag());
+			for (AgricultureItem item : agriculturalItems) {
+				tags.add(item.getTag());
 			}
-			mPrefs.setDeviceId(DeviceUtils.getUniqueDeviceID(this));
 			SubscribtionRequest request = new SubscribtionRequest();
-			request.setDeviceId(mPrefs.getDeviceId());
+			request.setDeviceId(DeviceUtils.getUniqueDeviceID(this));
 			request.setPhoneNumber(DeviceUtils.getPhoneNumber(this));
 			request.setTags(tags);
 			JSONObject objectRequest = null;
@@ -121,7 +120,7 @@ public class Subscription extends SherlockFragmentActivity implements
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
-			JsonObjectRequest jsonRequest = new JsonObjectRequest(Method.PUT,
+			JsonObjectRequest jsonRequest = new JsonObjectRequest(Method.POST,
 					KrishiGharUrls.SUBSCRIBE_URL, objectRequest, this, this);
 			AppUtil.getInstance().addToRequestQueue(jsonRequest, tag_json_obj);
 		}
@@ -129,8 +128,8 @@ public class Subscription extends SherlockFragmentActivity implements
 	}
 
 	public void onSuccessfullSubcription() {
-		new AgricultureInfoPreference(this).setLocation(locationName,
-				locationId);
+		mPrefs.setLocation(locationName);
+		mPrefs.setLocationId(locationId);
 		new SendGCMId(this).sendId();
 		startActivity(new Intent(this, FeedActivity.class));
 		finish();
@@ -147,7 +146,8 @@ public class Subscription extends SherlockFragmentActivity implements
 	public void onResponse(JSONObject arg0) {
 		GCMRegistration registration = new GCMRegistration(Subscription.this);
 		registration.getRegistrationId();
-		new CropDbHelper(this).addCrops(crops);
+		new AgricultureItemDbHelper(getApplicationContext())
+				.addItem(agriculturalItems);
 		onSuccessfullSubcription();
 	}
 
@@ -211,5 +211,5 @@ public class Subscription extends SherlockFragmentActivity implements
 		frag.setVisibility(View.VISIBLE);
 		btnTryAgain.setVisibility(View.GONE);
 	}
-
+	
 }

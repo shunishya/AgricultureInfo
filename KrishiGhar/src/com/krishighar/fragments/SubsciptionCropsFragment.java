@@ -1,44 +1,70 @@
 package com.krishighar.fragments;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONObject;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.util.DisplayMetrics;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ListView;
+import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockListFragment;
+import com.actionbarsherlock.app.SherlockFragment;
 import com.android.volley.Request.Method;
 import com.android.volley.Response.ErrorListener;
 import com.android.volley.Response.Listener;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.krishighar.adapters.CropsAdapter;
+import com.krishighar.R;
+import com.krishighar.adapters.AgricultureCategoryAdapter;
 import com.krishighar.api.KrishiGharUrls;
-import com.krishighar.api.models.GetCropsResponse;
-import com.krishighar.db.models.Crop;
+import com.krishighar.api.models.AgricultureCategory;
+import com.krishighar.api.models.GetAgricultureCategoryResponse;
+import com.krishighar.db.models.AgricultureItem;
 import com.krishighar.gcm.AppUtil;
 import com.krishighar.interfaces.SubcriptionListener;
-import com.krishighar.models.CropsListItem;
+import com.krishighar.models.AgricultureCategoryInfo;
+import com.krishighar.models.SelectableAgriculturalItems;
 import com.krishighar.utils.AgricultureInfoPreference;
 import com.krishighar.utils.JsonUtil;
 import com.krishighar.utils.StringHelper;
 
-public class SubsciptionCropsFragment extends SherlockListFragment implements
-		Listener<JSONObject>, ErrorListener {
+public class SubsciptionCropsFragment extends SherlockFragment implements
+		Listener<JSONObject>, ErrorListener, OnChildClickListener {
 
 	String tag_json_obj = "json_obj_req_crop";
 	private AgricultureInfoPreference mPref;
 	private SubcriptionListener mSubscriptionListener;
+	private ExpandableListView agricultureCategoryList;
+	private AgricultureCategoryAdapter mAdapter;
+	private List<AgricultureItem> selectedItems;
 
 	public SubsciptionCropsFragment(SubcriptionListener subscriptionListener) {
 		this.mSubscriptionListener = subscriptionListener;
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater,
+			@Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+		View rootView = inflater.inflate(
+				R.layout.agriculture_category_item_list, container, false);
+		agricultureCategoryList = (ExpandableListView) rootView
+				.findViewById(R.id.agricuture_list);
+		selectedItems = new ArrayList<AgricultureItem>();
+		setGroupIndicatorToRight();
+		agricultureCategoryList.setOnChildClickListener(this);
+		return rootView;
 	}
 
 	@Override
@@ -69,50 +95,31 @@ public class SubsciptionCropsFragment extends SherlockListFragment implements
 		AppUtil.getInstance().getRequestQueue().cancelAll(tag_json_obj);
 	}
 
-	public static final String[] CROPS = { "Maize", "Rice", "Barley", "Beans",
-			"Mustard", "Sunflower", "Sunflower", "Chyuri", "Jute" };
+	private void setGroupIndicatorToRight() {
+		/* Get the screen width */
+		DisplayMetrics dm = new DisplayMetrics();
+		getSherlockActivity().getWindowManager().getDefaultDisplay()
+				.getMetrics(dm);
+		int width = dm.widthPixels;
 
-	public List<CropsListItem> getCropsItem(ArrayList<Crop> crops) {
-		List<CropsListItem> cropsItem = new ArrayList<>();
-		for (int i = 0; i < crops.size(); i++) {
-			cropsItem.add(new CropsListItem(crops.get(i)));
-		}
-		return cropsItem;
+		agricultureCategoryList.setIndicatorBounds(
+				width - getDipsFromPixel(35), width - getDipsFromPixel(5));
 	}
 
-	@Override
-	public void onListItemClick(ListView l, View v, int position, long id) {
-		super.onListItemClick(l, v, position, id);
-		CropsAdapter adapter = (CropsAdapter) getListAdapter();
-		CropsListItem item = adapter.getItem(position);
-		item.setChecked(item.isChecked() ? false : true);
-		adapter.notifyDataSetChanged();
-		if (item.isChecked()) {
-			mSubscriptionListener.enableDoneMenuItem(true);
-		} else {
-			mSubscriptionListener.enableDoneMenuItem(hasAnyItemSelected());
-		}
+	// Convert pixel to dip
+	public int getDipsFromPixel(float pixels) {
+		// Get the screen's density scale
+		final float scale = getResources().getDisplayMetrics().density;
+		// Convert the dps to pixels, based on density scale
+		return (int) (pixels * scale + 0.5f);
 	}
 
-	public List<Crop> getSubscribedItems() {
-		List<Crop> crops = new ArrayList<>();
-		CropsAdapter adapter = (CropsAdapter) getListAdapter();
-		for (int i = 0; i < adapter.getCount(); i++) {
-			if (adapter.getItem(i).isChecked()) {
-				crops.add(adapter.getItem(i).getCrop());
-			}
-		}
-		return crops;
+	public List<AgricultureItem> getSubscribedItems() {
+		return selectedItems;
 	}
 
 	private boolean hasAnyItemSelected() {
-		CropsAdapter adapter = (CropsAdapter) getListAdapter();
-		for (int i = 0; i < adapter.getCount(); i++) {
-			if (adapter.getItem(i).isChecked()) {
-				return true;
-			}
-		}
-		return false;
+		return selectedItems.size() > 0 ? true : false;
 	}
 
 	@Override
@@ -134,9 +141,61 @@ public class SubsciptionCropsFragment extends SherlockListFragment implements
 
 	@Override
 	public void onResponse(JSONObject response) {
-		GetCropsResponse res = (GetCropsResponse) JsonUtil.readJsonString(
-				response.toString(), GetCropsResponse.class);
-		setListAdapter(new CropsAdapter(getSherlockActivity(),
-				getCropsItem(res.getCrops())));
+		GetAgricultureCategoryResponse res = (GetAgricultureCategoryResponse) JsonUtil
+				.readJsonString(response.toString(),
+						GetAgricultureCategoryResponse.class);
+		mAdapter = new AgricultureCategoryAdapter(getSherlockActivity(),
+				createCategoryList(res.getAgricultureCategories()),
+				createCollection(res.getAgricultureCategories()));
+		agricultureCategoryList.setAdapter(mAdapter);
+
+	}
+
+	private Map<Integer, List<SelectableAgriculturalItems>> createCollection(
+			List<AgricultureCategory> categories) {
+		Map<Integer, List<SelectableAgriculturalItems>> itemsList = new HashMap<Integer, List<SelectableAgriculturalItems>>();
+		for (AgricultureCategory agricultureCategory : categories) {
+			List<SelectableAgriculturalItems> items = new ArrayList<SelectableAgriculturalItems>();
+			for (AgricultureItem item : agricultureCategory.getInfoAbout()) {
+				items.add(new SelectableAgriculturalItems(item));
+			}
+			itemsList.put(agricultureCategory.getId(), items);
+		}
+		return itemsList;
+	}
+
+	private List<AgricultureCategoryInfo> createCategoryList(
+			List<AgricultureCategory> categories) {
+		List<AgricultureCategoryInfo> list = new ArrayList<AgricultureCategoryInfo>();
+		for (AgricultureCategory agricultureCategory : categories) {
+			AgricultureCategoryInfo category = new AgricultureCategoryInfo();
+			category.setId(agricultureCategory.getId());
+			category.setNameEn(agricultureCategory.getNameEn());
+			category.setNameNp(agricultureCategory.getNameNp());
+			list.add(category);
+		}
+		return list;
+
+	}
+
+	@Override
+	public boolean onChildClick(ExpandableListView prentView, View view,
+			int groupPosition, int childPosition, long id) {
+		SelectableAgriculturalItems item = mAdapter.getChild(groupPosition,
+				childPosition);
+
+		item.setChecked(item.isChecked() ? false : true);
+		item.getItems().setTag(
+				String.valueOf(mSubscriptionListener.getLocationId())+"-"
+						+ String.valueOf(item.getItems().getCropId()));
+		mAdapter.notifyDataSetChanged();
+		if (item.isChecked()) {
+			selectedItems.add(item.getItems());
+			mSubscriptionListener.enableDoneMenuItem(true);
+		} else {
+			selectedItems.remove(item);
+			mSubscriptionListener.enableDoneMenuItem(hasAnyItemSelected());
+		}
+		return true;
 	}
 }

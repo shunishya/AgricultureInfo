@@ -9,13 +9,13 @@ import android.view.ViewGroup;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.krishighar.R;
 import com.krishighar.activities.Subscription;
-import com.krishighar.db.CropDbHelper;
+import com.krishighar.db.AgricultureItemDbHelper;
 import com.krishighar.utils.AgricultureInfoPreference;
 import com.krishighar.utils.Network;
 
 public class SplashFragment extends SherlockFragment {
 	private Subscription mActivity;
-	private CropDbHelper mCropDbHelper;
+	private AgricultureItemDbHelper mCropDbHelper;
 	private int lang_id;
 
 	@Override
@@ -23,7 +23,7 @@ public class SplashFragment extends SherlockFragment {
 			Bundle savedInstanceState) {
 		View view = inflater
 				.inflate(R.layout.fragment_splash, container, false);
-		mCropDbHelper = new CropDbHelper(getSherlockActivity());
+		mCropDbHelper = new AgricultureItemDbHelper(getSherlockActivity());
 		return view;
 	}
 
@@ -37,7 +37,7 @@ public class SplashFragment extends SherlockFragment {
 	public void onResume() {
 		super.onResume();
 		if (mActivity != null) {
-			if (mCropDbHelper.getCrops().size() > 0) {
+			if (mCropDbHelper.getItems().size() > 0) {
 				lang_id = new AgricultureInfoPreference(mActivity)
 						.getLanguage();
 				if (Network.isConnected(getSherlockActivity())) {
