@@ -2,29 +2,35 @@ package com.krishighar.adapters;
 
 import java.util.List;
 
-import com.krishighar.db.models.AgricultureItem;
-import com.krishighar.fragments.CropFragment;
-
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-public class CropsPagerAdapter extends FragmentPagerAdapter {
-	private List<AgricultureItem> crops;
+import com.krishighar.fragments.CropFragment;
+import com.krishighar.fragments.ProvidersInformationFragment;
 
-	public CropsPagerAdapter(FragmentManager fm, List<AgricultureItem> titles) {
+public class CropsPagerAdapter extends FragmentPagerAdapter {
+	private List<String> titles;
+
+	public CropsPagerAdapter(FragmentManager fm, List<String> titles) {
 		super(fm);
-		this.crops = titles;
+		this.titles = titles;
 	}
 
 	@Override
 	public Fragment getItem(int position) {
-		return CropFragment.newInstance(crops.get(position));
+		if (titles.get(position).equalsIgnoreCase("Providers Info")
+				|| titles.get(position).equalsIgnoreCase("दाताहरूको सूचना")) {
+			return new ProvidersInformationFragment();
+		} else {
+			return new CropFragment();
+		}
+
 	}
 
 	@Override
 	public int getCount() {
-		return crops.size();
+		return titles.size();
 	}
 
 }

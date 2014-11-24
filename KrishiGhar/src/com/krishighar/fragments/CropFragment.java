@@ -1,13 +1,18 @@
 package com.krishighar.fragments;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.json.JSONObject;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -23,20 +28,24 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase.OnLastItemVisibleLis
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.krishighar.R;
+import com.krishighar.activities.FeedActivity;
 import com.krishighar.adapters.InfoAdapter;
+import com.krishighar.adapters.SubscribeItemsAdapter;
 import com.krishighar.api.KrishiGharUrls;
 import com.krishighar.api.models.InfoResponse;
+import com.krishighar.db.AgricultureItemDbHelper;
 import com.krishighar.db.InfoDbHelper;
 import com.krishighar.db.models.AgricultureItem;
 import com.krishighar.db.models.Info;
 import com.krishighar.gcm.AppUtil;
+import com.krishighar.interfaces.OnBackedPressedListener;
 import com.krishighar.utils.AgricultureInfoPreference;
 import com.krishighar.utils.JsonUtil;
 import com.krishighar.utils.Network;
 
 public class CropFragment extends SherlockFragment implements
 		Listener<JSONObject>, ErrorListener, OnRefreshListener<ListView>,
-		OnLastItemVisibleListener {
+		OnLastItemVisibleListener, OnItemClickListener, OnBackedPressedListener {
 
 	private String tag_json_obj = "json_obj_req_get_info";
 
@@ -44,16 +53,13 @@ public class CropFragment extends SherlockFragment implements
 	private AgricultureItem crop;
 	private InfoDbHelper mInfoDbHelper;
 	private InfoAdapter mAdapter;
+	private SubscribeItemsAdapter mItemsAdapter;
 	private ArrayList<Info> infos;
 	private AgricultureInfoPreference mPrefs;
+	private GridView mGridView;
+	private List<AgricultureItem> items;
 
 	private boolean isPulledNewInfo;
-
-	public static CropFragment newInstance(AgricultureItem id) {
-		CropFragment fragment = new CropFragment();
-		fragment.crop = id;
-		return fragment;
-	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -61,16 +67,23 @@ public class CropFragment extends SherlockFragment implements
 		View rootView = inflater.inflate(R.layout.fragment_crops_description,
 				container, false);
 		mPrefs = new AgricultureInfoPreference(getSherlockActivity());
+		mGridView = (GridView) rootView.findViewById(R.id.subscribedItems);
 		lvInfo = (PullToRefreshListView) rootView.findViewById(R.id.lvInfo);
+		items = new AgricultureItemDbHelper(getSherlockActivity()).getItems();
+		mItemsAdapter = new SubscribeItemsAdapter(getSherlockActivity(), items);
 		lvInfo.setMode(Mode.BOTH);
 		lvInfo.getLoadingLayoutProxy().setRefreshingLabel("Loading...");
 		infos = new ArrayList<Info>();
+		mGridView.setAdapter(mItemsAdapter);
 		mInfoDbHelper = new InfoDbHelper(getSherlockActivity());
 		mAdapter = new InfoAdapter(getSherlockActivity(), infos);
 		lvInfo.setAdapter(mAdapter);
-
+		lvInfo.setVisibility(View.GONE);
 		lvInfo.setOnRefreshListener(this);
 		lvInfo.setOnLastItemVisibleListener(this);
+
+		mGridView.setOnItemClickListener(this);
+
 		return rootView;
 	}
 
@@ -121,7 +134,7 @@ public class CropFragment extends SherlockFragment implements
 	public void onResume() {
 		super.onResume();
 
-		if (infos.isEmpty()) {
+		if (infos.isEmpty() && crop != null) {
 			if (mInfoDbHelper.isTableEmpty()) {
 				lvInfo.setRefreshing();
 				getInfoInitially();
@@ -134,9 +147,17 @@ public class CropFragment extends SherlockFragment implements
 				mAdapter.notifyDataSetChanged();
 			}
 		} else {
+			mItemsAdapter.checkLanguage();
+			mItemsAdapter.notifyDataSetChanged();
 			mAdapter.checkLanguage();
 			mAdapter.notifyDataSetChanged();
 		}
+	}
+
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		((FeedActivity) activity).attachListener(this);
 	}
 
 	@Override
@@ -194,6 +215,41 @@ public class CropFragment extends SherlockFragment implements
 		JsonObjectRequest jsonRequest = new JsonObjectRequest(Method.GET, url,
 				null, this, this);
 		AppUtil.getInstance().addToRequestQueue(jsonRequest, tag_json_obj);
+	}
+
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position,
+			long id) {
+		crop = mItemsAdapter.getItem(position);
+		prepareList();
+
+	}
+
+	private void prepareList() {
+		mGridView.setVisibility(View.GONE);
+		infos.clear();
+		if (mInfoDbHelper.isTableEmpty()) {
+			lvInfo.setRefreshing();
+			getInfoInitially();
+		} else {
+			infos.addAll(mInfoDbHelper.getAllInfo(crop.getTag(), 0));
+			if (infos.isEmpty()) {
+				lvInfo.setRefreshing();
+				getInfoInitially();
+			}
+			mAdapter.notifyDataSetChanged();
+		}
+		lvInfo.setVisibility(View.VISIBLE);
+	}
+
+	@Override
+	public void onBackPress() {
+		if (mGridView.getVisibility() == View.GONE) {
+			lvInfo.setVisibility(View.GONE);
+			mGridView.setVisibility(View.VISIBLE);
+		} else {
+			getSherlockActivity().finish();
+		}
 	}
 
 }

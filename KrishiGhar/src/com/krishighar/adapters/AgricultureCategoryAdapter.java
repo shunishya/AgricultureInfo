@@ -32,9 +32,8 @@ public class AgricultureCategoryAdapter extends BaseExpandableListAdapter {
 			Map<Integer, List<SelectableAgriculturalItems>> objects) {
 		mInflater = LayoutInflater.from(context);
 		mPrefs = new AgricultureInfoPreference(context);
-		this.lang_id=mPrefs.getLanguage();
-		isLanguageEn = lang_id == LanguageChooseFrag.ENGLISH ? true
-				: false;
+		this.lang_id = mPrefs.getLanguage();
+		isLanguageEn = lang_id == LanguageChooseFrag.ENGLISH ? true : false;
 		this.agricultureCategories = agricultureCategories;
 		this.items = objects;
 	}
@@ -89,7 +88,7 @@ public class AgricultureCategoryAdapter extends BaseExpandableListAdapter {
 	@Override
 	public int getChildrenCount(int groupPosition) {
 		AgricultureCategoryInfo cat = agricultureCategories.get(groupPosition);
-		//List<SelectableAgriculturalItems> item = items.get(cat.getId());
+		// List<SelectableAgriculturalItems> item = items.get(cat.getId());
 		return items.get(cat.getId()).size();
 	}
 
@@ -120,7 +119,8 @@ public class AgricultureCategoryAdapter extends BaseExpandableListAdapter {
 		TextView item = (TextView) convertView.findViewById(R.id.header);
 		item.setTypeface(null, Typeface.BOLD);
 		if (isLanguageEn) {
-			item.setText(StringHelper.getListHeaderTitle(lang_id)+agricultureCategory.getNameEn());
+			item.setText(StringHelper.getListHeaderTitle(lang_id)
+					+ agricultureCategory.getNameEn());
 		} else {
 			item.setText(agricultureCategory.getNameNp());
 		}

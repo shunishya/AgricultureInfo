@@ -1,5 +1,7 @@
 package com.krishighar.utils;
 
+import java.util.ArrayList;
+
 import com.krishighar.fragments.LanguageChooseFrag;
 
 public class StringHelper {
@@ -27,11 +29,11 @@ public class StringHelper {
 			return "बाली र पशु रोज्नुहोस";
 		}
 	}
-	
-	public static String getListHeaderTitle(int lang_id){
-		if(lang_id==LanguageChooseFrag.ENGLISH){
+
+	public static String getListHeaderTitle(int lang_id) {
+		if (lang_id == LanguageChooseFrag.ENGLISH) {
 			return "touch here to select ";
-		}else{
+		} else {
 			return " रोज्न यहाँ छुनुहोस्";
 		}
 	}
@@ -66,6 +68,18 @@ public class StringHelper {
 		} else {
 			return "इन्टरनेट सूचना";
 		}
+	}
+
+	public static ArrayList<String> getTabTitles(int lang_id) {
+		ArrayList<String> titles = new ArrayList<>();
+		if (lang_id == LanguageChooseFrag.ENGLISH) {
+			titles.add("Providers Info");
+			titles.add("Subscribe Items");
+		} else {
+			titles.add("दाताहरूको सूचना");
+			titles.add("कृषि वस्तुहरू");
+		}
+		return titles;
 	}
 
 }
