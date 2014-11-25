@@ -1,11 +1,23 @@
 package com.krishighar.api.models;
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+import com.krishighar.db.DbConf;
+
+@DatabaseTable(tableName = DbConf.TABLE_PROVIDERS_INFO)
 public class ProviderInfo {
+
+	@DatabaseField
 	private int id;
+	@DatabaseField(id = true)
 	private String username;
+	@DatabaseField
 	private String nameEn;
+	@DatabaseField
 	private String nameNp;
+	@DatabaseField
 	private String descriptionEn;
+	@DatabaseField
 	private String descriptionNp;
 
 	/**

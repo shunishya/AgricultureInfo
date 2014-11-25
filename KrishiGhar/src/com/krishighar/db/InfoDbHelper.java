@@ -99,7 +99,8 @@ public class InfoDbHelper {
 	}
 
 	public List<String> getAllTags() {
-		AgricultureItemDbHelper cropDbHelper = new AgricultureItemDbHelper(mContext);
+		AgricultureItemDbHelper cropDbHelper = new AgricultureItemDbHelper(
+				mContext);
 		return cropDbHelper.getTags();
 	}
 
@@ -146,6 +147,13 @@ public class InfoDbHelper {
 			e.printStackTrace();
 		}
 		return infos;
+	}
+
+	public long getLatestTimestampOfItem(String tag) {
+		long time;
+		ArrayList<Info> infos = getInfoOfCrop(tag, 0);
+		time = infos.get(0).getTimestamp();
+		return time;
 	}
 
 }

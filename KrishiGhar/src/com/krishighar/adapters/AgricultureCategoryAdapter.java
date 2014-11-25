@@ -122,7 +122,8 @@ public class AgricultureCategoryAdapter extends BaseExpandableListAdapter {
 			item.setText(StringHelper.getListHeaderTitle(lang_id)
 					+ agricultureCategory.getNameEn());
 		} else {
-			item.setText(agricultureCategory.getNameNp());
+			item.setText(agricultureCategory.getNameNp()
+					+ StringHelper.getListHeaderTitle(lang_id));
 		}
 		return convertView;
 	}

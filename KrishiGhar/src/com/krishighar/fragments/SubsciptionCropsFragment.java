@@ -193,7 +193,7 @@ public class SubsciptionCropsFragment extends SherlockFragment implements
 			selectedItems.add(item.getItems());
 			mSubscriptionListener.enableDoneMenuItem(true);
 		} else {
-			selectedItems.remove(item);
+			selectedItems.remove(item.getItems());
 			mSubscriptionListener.enableDoneMenuItem(hasAnyItemSelected());
 		}
 		return true;
