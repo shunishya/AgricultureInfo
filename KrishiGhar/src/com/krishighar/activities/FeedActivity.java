@@ -1,5 +1,9 @@
 package com.krishighar.activities;
 
+import im.dino.dbinspector.activities.DbInspectorActivity;
+
+import java.util.ArrayList;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -13,26 +17,20 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.krishighar.R;
 import com.krishighar.adapters.CropsPagerAdapter;
-import com.krishighar.db.AgricultureItemDbHelper;
-import com.krishighar.db.models.AgricultureItem;
 import com.krishighar.fragments.LanguageChooseFrag;
+import com.krishighar.interfaces.OnBackedPressedListener;
 import com.krishighar.utils.AgricultureInfoPreference;
 import com.krishighar.utils.StringHelper;
 
-import im.dino.dbinspector.activities.DbInspectorActivity;
-
-import java.util.List;
-
 public class FeedActivity extends SherlockFragmentActivity {
 	private ActionBar mActionBar;
-	private List<AgricultureItem> crops;
 	private ViewPager mPager;
 	private AgricultureInfoPreference mPrefs;
-	private AgricultureItemDbHelper mAgricultureItemDbHelper;
-	private FragmentPagerAdapter mPagerAdapter;
 
 	private boolean isLanguageEn;
 	private int lang_id;
+	private ArrayList<String> titles;
+	private OnBackedPressedListener mListener;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -43,10 +41,9 @@ public class FeedActivity extends SherlockFragmentActivity {
 		lang_id = mPrefs.getLanguage();
 		isLanguageEn = lang_id == LanguageChooseFrag.ENGLISH ? true : false;
 		mActionBar.setTitle(StringHelper.getAppName(lang_id));
-		mAgricultureItemDbHelper = new AgricultureItemDbHelper(this);
-		crops = mAgricultureItemDbHelper.getItems();
-		mPagerAdapter = new CropsPagerAdapter(getSupportFragmentManager(),
-				crops);
+		titles = StringHelper.getTabTitles(lang_id);
+		FragmentPagerAdapter mPagerAdapter = new CropsPagerAdapter(
+				getSupportFragmentManager(), titles);
 		mPager = (ViewPager) findViewById(R.id.pager);
 		mPager.setOnPageChangeListener(onPageChangeListener);
 		mPager.setAdapter(mPagerAdapter);
@@ -58,8 +55,7 @@ public class FeedActivity extends SherlockFragmentActivity {
 		@Override
 		public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
 			mPager.setCurrentItem(tab.getPosition());
-			tab.setText(isLanguageEn ? crops.get(tab.getPosition()).getNameEn()
-					: crops.get(tab.getPosition()).getNameNp());
+			tab.setText(titles.get(tab.getPosition()));
 		}
 
 		@Override
@@ -72,6 +68,19 @@ public class FeedActivity extends SherlockFragmentActivity {
 		}
 	};
 
+	public void attachListener(OnBackedPressedListener mListener) {
+		this.mListener = mListener;
+	}
+
+	@Override
+	public void onBackPressed() {
+		if (mListener != null) {
+			mListener.onBackPress();
+		} else {
+			super.onBackPressed();
+		}
+	}
+
 	/**
 	 * call onCreate
 	 * 
@@ -82,26 +91,12 @@ public class FeedActivity extends SherlockFragmentActivity {
 		mActionBar.setDisplayHomeAsUpEnabled(false);
 		mActionBar.setHomeButtonEnabled(true);
 		mActionBar.setDisplayShowTitleEnabled(true);
-		if (crops.size() > 1) {
-			for (AgricultureItem crop : crops) {
-				ActionBar.Tab tab = mActionBar
-						.newTab()
-						.setText(
-								isLanguageEn ? crop.getNameEn() : crop
-										.getNameNp())
-						.setTabListener(tabListener);
-				mActionBar.addTab(tab);
-
-			}
-			mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-		} else {
-			if (isLanguageEn) {
-				mActionBar.setTitle(crops.get(0).getNameEn());
-			} else {
-				mActionBar.setTitle(crops.get(0).getNameNp());
-			}
+		for (String title : titles) {
+			ActionBar.Tab tab = mActionBar.newTab().setText(title)
+					.setTabListener(tabListener);
+			mActionBar.addTab(tab);
 		}
-
+		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 	}
 
 	private ViewPager.SimpleOnPageChangeListener onPageChangeListener = new ViewPager.SimpleOnPageChangeListener() {
@@ -110,11 +105,9 @@ public class FeedActivity extends SherlockFragmentActivity {
 			super.onPageSelected(position);
 			mActionBar.setSelectedNavigationItem(position);
 			if (isLanguageEn) {
-				mActionBar.getTabAt(position).setText(
-						crops.get(position).getNameEn());
+				mActionBar.getTabAt(position).setText(titles.get(position));
 			} else {
-				mActionBar.getTabAt(position).setText(
-						crops.get(position).getNameNp());
+				mActionBar.getTabAt(position).setText(titles.get(position));
 			}
 		}
 	};
@@ -155,21 +148,12 @@ public class FeedActivity extends SherlockFragmentActivity {
 		if (isLanguageChanged) {
 			lang_id = mPrefs.getLanguage();
 			isLanguageEn = lang_id == LanguageChooseFrag.ENGLISH ? true : false;
-			if (crops.size() > 1) {
-				for (int i = 0; i < crops.size(); i++) {
-					if (isLanguageEn) {
-						mActionBar.getTabAt(i)
-								.setText(crops.get(i).getNameEn());
-					} else {
-						mActionBar.getTabAt(i)
-								.setText(crops.get(i).getNameNp());
-					}
-				}
-			} else {
+			titles = StringHelper.getTabTitles(lang_id);
+			for (int i = 0; i < titles.size(); i++) {
 				if (isLanguageEn) {
-					mActionBar.setTitle(crops.get(0).getNameEn());
+					mActionBar.getTabAt(i).setText(titles.get(i));
 				} else {
-					mActionBar.setTitle(crops.get(0).getNameNp());
+					mActionBar.getTabAt(i).setText(titles.get(i));
 				}
 			}
 		}
