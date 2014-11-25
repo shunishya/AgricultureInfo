@@ -1,7 +1,5 @@
 package com.krishighar.adapters;
 
-import java.util.ArrayList;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,14 +12,16 @@ import com.krishighar.api.models.ProviderInfo;
 import com.krishighar.fragments.LanguageChooseFrag;
 import com.krishighar.utils.AgricultureInfoPreference;
 
+import java.util.List;
+
 public class ProviderInfoAdapter extends ArrayAdapter<ProviderInfo> {
-	private ArrayList<ProviderInfo> providerInformation;
+	private List<ProviderInfo> providerInformation;
 	private LayoutInflater mInflater;
 	private AgricultureInfoPreference mPrefs;
 	private boolean isLanguageEn;
 
 	public ProviderInfoAdapter(Context context,
-			ArrayList<ProviderInfo> information) {
+			List<ProviderInfo> information) {
 		super(context, R.id.tvProviderName, information);
 		this.mInflater = LayoutInflater.from(context);
 		this.providerInformation = information;

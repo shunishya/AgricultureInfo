@@ -1,39 +1,39 @@
 package com.krishighar;
 
-import java.util.ArrayList;
-
-import com.android.volley.Response.ErrorListener;
-import com.android.volley.Response.Listener;
-import com.android.volley.VolleyError;
-import com.krishighar.api.models.InfoResponse;
-import com.krishighar.db.AgricultureItemDbHelper;
-import com.krishighar.db.InfoDbHelper;
-import com.krishighar.db.models.AgricultureItem;
-
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 
-public class GetInfoService extends Service implements Listener<InfoResponse>,
+import com.android.volley.Response.ErrorListener;
+import com.android.volley.Response.Listener;
+import com.android.volley.VolleyError;
+import com.krishighar.db.AgricultureItemDbHelper;
+import com.krishighar.db.InfoDbHelper;
+import com.krishighar.db.models.AgricultureItem;
+
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+
+public class GetInfoService extends Service implements Listener<JSONObject>,
 		ErrorListener {
 
 	private InfoDbHelper mInfoDbHelper;
-	private AgricultureItemDbHelper mCropDbHelper;
-	private ArrayList<AgricultureItem> crops;
+	private AgricultureItemDbHelper mItemsDbHelper;
+	private ArrayList<AgricultureItem> items;
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		mInfoDbHelper = new InfoDbHelper(getApplicationContext());
-		mCropDbHelper = new AgricultureItemDbHelper(getApplicationContext());
-		crops = new ArrayList<AgricultureItem>();
-		crops = (ArrayList<AgricultureItem>) mCropDbHelper.getItems();
+		mItemsDbHelper = new AgricultureItemDbHelper(getApplicationContext());
+		items = new ArrayList<AgricultureItem>();
+		items = (ArrayList<AgricultureItem>) mItemsDbHelper.getItems();
 
 	}
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -43,7 +43,7 @@ public class GetInfoService extends Service implements Listener<InfoResponse>,
 	}
 
 	@Override
-	public void onResponse(InfoResponse response) {
+	public void onResponse(JSONObject res) {
 		// TODO Auto-generated method stub
 
 	}

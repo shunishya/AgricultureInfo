@@ -12,29 +12,24 @@ public class AgricultureInfoPreference {
 	private static final String LOCATION_ID = "location_id";
 	private static final String PREFFERED_LANGUAGE = "preffered_lang";
 
-	private static final String ISLOGGEDIN = "is_loggedin";
+	private static final String ISCONTACTSSYNCED = "is_contact_synced";
 	private static final String GCM_REGISTRATION_ID = "_gcm_registration_id";
 	private static final String IS_PULLED_ALL_OLD_INFO = "is_pulled_all_info";
+	private static final String LAST_INFO_SYNCED_TIME = "last_info_pull";
 
 	public AgricultureInfoPreference(Context context) {
 		mSharedPreferences = context.getSharedPreferences(PREFS_NAME,
 				Context.MODE_PRIVATE);
 	}
 
-	public boolean isUserLoggedin() {
-		return mSharedPreferences.getBoolean(ISLOGGEDIN, false);
+	public boolean isContactSynced() {
+		return mSharedPreferences.getBoolean(ISCONTACTSSYNCED, false);
 
 	}
 
-	public void isLoggedin(boolean isLoggedin) {
+	public void setContactSynced(boolean isSynced) {
 		mEditor = mSharedPreferences.edit();
-		mEditor.putBoolean(ISLOGGEDIN, isLoggedin);
-		mEditor.commit();
-	}
-
-	public void putCrops() {
-		mEditor = mSharedPreferences.edit();
-
+		mEditor.putBoolean(ISCONTACTSSYNCED, isSynced);
 		mEditor.commit();
 	}
 
@@ -96,6 +91,22 @@ public class AgricultureInfoPreference {
 		mEditor = mSharedPreferences.edit();
 		mEditor.putBoolean(IS_PULLED_ALL_OLD_INFO + forCrop, isPulled);
 		mEditor.commit();
+	}
+
+	public void setInfoPulledTime(long timestamp) {
+		mEditor = mSharedPreferences.edit();
+		mEditor.putLong(LAST_INFO_SYNCED_TIME, timestamp);
+		mEditor.commit();
+	}
+
+	public boolean shouldPullInfo() {
+		long timestamp = mSharedPreferences.getLong(LAST_INFO_SYNCED_TIME, 0);
+		long diff = System.currentTimeMillis() - timestamp;
+		if ((diff / (1000 * 60)) >= 5) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 }
