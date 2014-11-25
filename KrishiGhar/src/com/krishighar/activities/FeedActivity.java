@@ -1,9 +1,5 @@
 package com.krishighar.activities;
 
-import im.dino.dbinspector.activities.DbInspectorActivity;
-
-import java.util.List;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -23,12 +19,16 @@ import com.krishighar.fragments.LanguageChooseFrag;
 import com.krishighar.utils.AgricultureInfoPreference;
 import com.krishighar.utils.StringHelper;
 
+import im.dino.dbinspector.activities.DbInspectorActivity;
+
+import java.util.List;
+
 public class FeedActivity extends SherlockFragmentActivity {
 	private ActionBar mActionBar;
 	private List<AgricultureItem> crops;
 	private ViewPager mPager;
 	private AgricultureInfoPreference mPrefs;
-	private CropDbHelper mCropsDbHelper;
+	private AgricultureItemDbHelper mAgricultureItemDbHelper;
 	private FragmentPagerAdapter mPagerAdapter;
 
 	private boolean isLanguageEn;
@@ -43,9 +43,10 @@ public class FeedActivity extends SherlockFragmentActivity {
 		lang_id = mPrefs.getLanguage();
 		isLanguageEn = lang_id == LanguageChooseFrag.ENGLISH ? true : false;
 		mActionBar.setTitle(StringHelper.getAppName(lang_id));
-		crops = new AgricultureItemDbHelper(this).getItems();
-		FragmentPagerAdapter mPagerAdapter = new CropsPagerAdapter(
-				getSupportFragmentManager(), crops);
+		mAgricultureItemDbHelper = new AgricultureItemDbHelper(this);
+		crops = mAgricultureItemDbHelper.getItems();
+		mPagerAdapter = new CropsPagerAdapter(getSupportFragmentManager(),
+				crops);
 		mPager = (ViewPager) findViewById(R.id.pager);
 		mPager.setOnPageChangeListener(onPageChangeListener);
 		mPager.setAdapter(mPagerAdapter);

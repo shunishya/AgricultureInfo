@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class GetAgricultureCategoryResponse extends BaseResponse {
 	@JsonProperty("body")
-	private ArrayList<AgricultureCategory> agricultureCategories;
+	private ArrayList<AgricultureCategory> agricultureCategories = new ArrayList<AgricultureCategory>();
 
 	/**
 	 * @return the agricultureCategories
@@ -21,7 +21,9 @@ public class GetAgricultureCategoryResponse extends BaseResponse {
 	 */
 	public void setAgricultureCategories(
 			ArrayList<AgricultureCategory> agricultureCategories) {
-		this.agricultureCategories = agricultureCategories;
+		if (agricultureCategories != null) {
+			this.agricultureCategories = agricultureCategories;
+		}
 	}
 
 }
