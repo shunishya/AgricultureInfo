@@ -20,8 +20,7 @@ public class ProviderInfoAdapter extends ArrayAdapter<ProviderInfo> {
 	private AgricultureInfoPreference mPrefs;
 	private boolean isLanguageEn;
 
-	public ProviderInfoAdapter(Context context,
-			List<ProviderInfo> information) {
+	public ProviderInfoAdapter(Context context, List<ProviderInfo> information) {
 		super(context, R.id.tvProviderName, information);
 		this.mInflater = LayoutInflater.from(context);
 		this.providerInformation = information;
@@ -54,7 +53,7 @@ public class ProviderInfoAdapter extends ArrayAdapter<ProviderInfo> {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		ViewHolder holder = null;
-		ProviderInfo info = getItem(position);
+		ProviderInfo info = providerInformation.get(position);
 		if (convertView == null) {
 			convertView = mInflater.inflate(R.layout.provider_info_row, parent,
 					false);

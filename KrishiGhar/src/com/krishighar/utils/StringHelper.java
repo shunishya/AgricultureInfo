@@ -45,6 +45,14 @@ public class StringHelper {
 			return "अघाडी बढ्न इन्टरनेट चाहिन्छ ! इन्टरनेट सुचारु गर्नुहुन्छ ?";
 		}
 	}
+	
+	public static String getContactSyncDialogMessage(int lang_id) {
+		if (lang_id == LanguageChooseFrag.ENGLISH) {
+			return "Tell your friends about Krishi Ghar. Do you want to tell?";
+		} else {
+			return "कृषि घरको बारेमा आफ्नो मित्रहरुलाई बताउनु । तपाईं बताउन चाहनुहुन्छ?";
+		}
+	}
 
 	public static String getPositiveValue(int lang_id) {
 		if (lang_id == LanguageChooseFrag.ENGLISH) {

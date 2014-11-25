@@ -4,6 +4,8 @@ import im.dino.dbinspector.activities.DbInspectorActivity;
 
 import java.util.ArrayList;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -38,8 +40,13 @@ public class FeedActivity extends SherlockFragmentActivity {
 		setContentView(R.layout.layout_feed);
 		mActionBar = getSupportActionBar();
 		mPrefs = new AgricultureInfoPreference(this);
+
 		lang_id = mPrefs.getLanguage();
 		isLanguageEn = lang_id == LanguageChooseFrag.ENGLISH ? true : false;
+
+		if (!mPrefs.isContactSynced()) {
+			showContactSyncDialogue();
+		}
 		mActionBar.setTitle(StringHelper.getAppName(lang_id));
 		titles = StringHelper.getTabTitles(lang_id);
 		FragmentPagerAdapter mPagerAdapter = new CropsPagerAdapter(
@@ -162,6 +169,32 @@ public class FeedActivity extends SherlockFragmentActivity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+	}
+
+	public void showContactSyncDialogue() {
+		AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+
+		alertDialog.setTitle(StringHelper.getAppName(lang_id));
+
+		alertDialog.setMessage(StringHelper
+				.getContactSyncDialogMessage(lang_id));
+
+		alertDialog.setPositiveButton(StringHelper.getPositiveValue(lang_id),
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+
+						dialog.cancel();
+					}
+				});
+
+		alertDialog.setNegativeButton(StringHelper.getNegativeValue(lang_id),
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.cancel();
+					}
+				});
+
+		alertDialog.show();
 	}
 
 }

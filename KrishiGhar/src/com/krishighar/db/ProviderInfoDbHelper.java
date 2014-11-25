@@ -20,7 +20,7 @@ public class ProviderInfoDbHelper {
 		DbHelper dbHelper = (DbHelper) OpenHelperManager.getHelper(context,
 				DbHelper.class);
 		try {
-			this.mProviderInfoDao = dbHelper.getDao(AgricultureItem.class);
+			this.mProviderInfoDao = dbHelper.getDao(ProviderInfo.class);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
