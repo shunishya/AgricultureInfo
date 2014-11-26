@@ -150,9 +150,11 @@ public class InfoDbHelper {
 	}
 
 	public long getLatestTimestampOfItem(String tag) {
-		long time;
+		long time = 0;
 		ArrayList<Info> infos = getInfoOfCrop(tag, 0);
-		time = infos.get(0).getTimestamp();
+		if (!infos.isEmpty()) {
+			time = infos.get(0).getTimestamp();
+		}
 		return time;
 	}
 

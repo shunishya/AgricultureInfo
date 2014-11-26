@@ -15,7 +15,6 @@ public class AgricultureInfoPreference {
 	private static final String ISCONTACTSSYNCED = "is_contact_synced";
 	private static final String GCM_REGISTRATION_ID = "_gcm_registration_id";
 	private static final String IS_PULLED_ALL_OLD_INFO = "is_pulled_all_info";
-	private static final String LAST_INFO_SYNCED_TIME = "last_info_pull";
 
 	public AgricultureInfoPreference(Context context) {
 		mSharedPreferences = context.getSharedPreferences(PREFS_NAME,
@@ -93,19 +92,23 @@ public class AgricultureInfoPreference {
 		mEditor.commit();
 	}
 
-	public void setInfoPulledTime(long timestamp) {
+	public void setInfoPulledTime(String crop, long timestamp) {
 		mEditor = mSharedPreferences.edit();
-		mEditor.putLong(LAST_INFO_SYNCED_TIME, timestamp);
+		mEditor.putLong(crop, timestamp);
 		mEditor.commit();
 	}
 
-	public boolean shouldPullInfo() {
-		long timestamp = mSharedPreferences.getLong(LAST_INFO_SYNCED_TIME, 0);
-		long diff = System.currentTimeMillis() - timestamp;
-		if ((diff / (1000 * 60)) >= 5) {
-			return true;
+	public boolean shouldPullInfo(String crop) {
+		long timestamp = mSharedPreferences.getLong(crop, 0);
+		if (timestamp != 0) {
+			long diff = System.currentTimeMillis() - timestamp;
+			if ((diff / (1000 * 60)) >= 5) {
+				return true;
+			} else {
+				return false;
+			}
 		} else {
-			return false;
+			return true;
 		}
 	}
 

@@ -44,7 +44,7 @@ public class SendGCMId implements Listener<JSONObject>, ErrorListener {
 
 	@Override
 	public void onErrorResponse(VolleyError error) {
-		Toast.makeText(mContext, "Error:: please try again.",
+		Toast.makeText(mContext, "GCM:: please try again." + error.toString(),
 				Toast.LENGTH_SHORT).show();
 	}
 

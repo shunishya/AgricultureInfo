@@ -140,7 +140,7 @@ public class FeedActivity extends SherlockFragmentActivity {
 			startActivity(new Intent(this, DbInspectorActivity.class));
 			break;
 		case R.id.settings:
-			startActivity(new Intent(this, Settings.class));
+			startActivity(new Intent(this, SettingsActivity.class));
 		default:
 			break;
 		}
@@ -182,7 +182,7 @@ public class FeedActivity extends SherlockFragmentActivity {
 		alertDialog.setPositiveButton(StringHelper.getPositiveValue(lang_id),
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
-
+						// TODO call address sync service
 						dialog.cancel();
 					}
 				});
@@ -190,6 +190,7 @@ public class FeedActivity extends SherlockFragmentActivity {
 		alertDialog.setNegativeButton(StringHelper.getNegativeValue(lang_id),
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
+						// mPrefs.setContactSynced(true);
 						dialog.cancel();
 					}
 				});

@@ -82,6 +82,10 @@ public class ProvidersInformationFragment extends SherlockFragment implements
 		Toast.makeText(getSherlockActivity(),
 				"Get Providers info:" + error.toString(), Toast.LENGTH_SHORT)
 				.show();
+		if (!mProviderDbHelper.isTableEmpty()) {
+			infos.addAll(mProviderDbHelper.getProvidersInfo());
+			mAdapter.notifyDataSetChanged();
+		}
 	}
 
 	@Override
@@ -89,9 +93,11 @@ public class ProvidersInformationFragment extends SherlockFragment implements
 		ProvidersInfoResponse response = (ProvidersInfoResponse) JsonUtil
 				.readJsonString(res.toString(), ProvidersInfoResponse.class);
 		boolean isSaved = mProviderDbHelper.addProvider(response.getInfos());
-		infos.clear();
-		infos.addAll(mProviderDbHelper.getProvidersInfo());
-		mAdapter.notifyDataSetChanged();
+		if (isSaved) {
+			infos.clear();
+			infos.addAll(mProviderDbHelper.getProvidersInfo());
+			mAdapter.notifyDataSetChanged();
+		}
 	}
 
 }

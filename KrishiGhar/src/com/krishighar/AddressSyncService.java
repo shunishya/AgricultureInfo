@@ -2,6 +2,12 @@ package com.krishighar;
 
 import java.lang.ref.WeakReference;
 
+import org.json.JSONObject;
+
+import com.android.volley.Response.ErrorListener;
+import com.android.volley.Response.Listener;
+import com.android.volley.VolleyError;
+
 import android.app.Service;
 import android.content.Intent;
 import android.database.Cursor;
@@ -9,7 +15,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.provider.ContactsContract;
 
-public class AddressSyncService extends Service {
+public class AddressSyncService extends Service implements Listener<JSONObject>, ErrorListener{
 	private LocalBinder<AddressSyncService> mBinder;
 
 	@Override
@@ -61,6 +67,17 @@ public class AddressSyncService extends Service {
 		public void close() {
 			mService = null;
 		}
+	}
+
+	@Override
+	public void onErrorResponse(VolleyError arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onResponse(JSONObject arg0) {
+		// mPrefs.setContactSynced(true);
 	}
 
 }

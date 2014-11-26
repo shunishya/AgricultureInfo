@@ -6,7 +6,7 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.krishighar.R;
 import com.krishighar.fragments.SettingOptionFrag;
 
-public class Settings extends SherlockFragmentActivity {
+public class SettingsActivity extends SherlockFragmentActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

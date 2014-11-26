@@ -20,12 +20,14 @@ import com.krishighar.api.models.InfoResponse;
 import com.krishighar.db.AgricultureItemDbHelper;
 import com.krishighar.db.InfoDbHelper;
 import com.krishighar.gcm.AppUtil;
+import com.krishighar.utils.AgricultureInfoPreference;
 import com.krishighar.utils.JsonUtil;
 
 public class GetInfoService extends Service implements Listener<JSONObject>,
 		ErrorListener {
 
 	private InfoDbHelper mInfoHelper;
+	private AgricultureInfoPreference mPrefs;
 	private AgricultureItemDbHelper mItemDbHelper;
 	private int i = 0;
 	private List<String> tags;
@@ -38,6 +40,7 @@ public class GetInfoService extends Service implements Listener<JSONObject>,
 		mItemDbHelper = new AgricultureItemDbHelper(getApplicationContext());
 		tags = new ArrayList<String>();
 		tags = mItemDbHelper.getTags();
+		mPrefs = new AgricultureInfoPreference(getApplicationContext());
 		long timestamp = mInfoHelper.getLatestTimestampOfItem(tags.get(i));
 		getCropInfo(tags.get(i), timestamp);
 	}
@@ -48,10 +51,26 @@ public class GetInfoService extends Service implements Listener<JSONObject>,
 	}
 
 	private void getCropInfo(String tag, long timestamp) {
-		String url = KrishiGharUrls.GET_CROP_INFO_URL + tag + "/n/" + timestamp;
-		JsonObjectRequest jsonRequest = new JsonObjectRequest(Method.GET, url,
-				null, this, this);
-		AppUtil.getInstance().addToRequestQueue(jsonRequest);
+		if (timestamp != 0) {
+			if (mPrefs.shouldPullInfo(tag)) {
+				String url = KrishiGharUrls.GET_CROP_INFO_URL + tag + "/n/"
+						+ timestamp;
+				JsonObjectRequest jsonRequest = new JsonObjectRequest(
+						Method.GET, url, null, this, this);
+				AppUtil.getInstance().addToRequestQueue(jsonRequest);
+			} else {
+				i++;
+				if (i < tags.size()) {
+					getCropInfo(tags.get(i),
+							mInfoHelper.getLatestTimestampOfItem(tags.get(i)));
+				}
+			}
+		} else {
+			String url = KrishiGharUrls.GET_CROP_INFO_URL + tag;
+			JsonObjectRequest jsonRequest = new JsonObjectRequest(Method.GET,
+					url, null, this, this);
+			AppUtil.getInstance().addToRequestQueue(jsonRequest);
+		}
 	}
 
 	@Override
@@ -64,10 +83,12 @@ public class GetInfoService extends Service implements Listener<JSONObject>,
 	@Override
 	public void onResponse(JSONObject res) {
 		InfoResponse response = (InfoResponse) JsonUtil.readJsonString(
-				JsonUtil.writeValue(res), InfoResponse.class);
-		mInfoHelper.addInfo(response.getInfos(), tags.get(i));
+				res.toString(), InfoResponse.class);
+		if (response.getInfos() != null) {
+			mInfoHelper.addInfo(response.getInfos(), tags.get(i));
+		}
 		i++;
-		if (!(i > tags.size())) {
+		if (i < tags.size()) {
 			getCropInfo(tags.get(i),
 					mInfoHelper.getLatestTimestampOfItem(tags.get(i)));
 		} else {

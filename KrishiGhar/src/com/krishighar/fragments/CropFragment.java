@@ -119,12 +119,17 @@ public class CropFragment extends SherlockFragment implements
 			if (isPulledNewInfo) {
 				infos.clear();
 				infos.addAll(mInfoDbHelper.getAllInfo(crop.getTag(), 0));
+				if (res.getInfos().isEmpty()) {
+					mPrefs.setInfoPulledTime(crop.getTag(),
+							System.currentTimeMillis());
+				}
 			} else {
 				infos.addAll(res.getInfos());
 				if (res.getInfos().isEmpty()) {
 					mPrefs.setPulledAllOldInfo(crop.getTag(), true);
 				}
 			}
+			lvInfo.onRefreshComplete();
 		}
 		mAdapter.notifyDataSetChanged();
 		lvInfo.onRefreshComplete();
@@ -168,14 +173,14 @@ public class CropFragment extends SherlockFragment implements
 		} else {
 			if (Network.isConnected(getSherlockActivity())) {
 				if (mAdapter.getCount() > 0) {
-					getCropInfo(mAdapter.getLatestTimestamp());
+					if (mPrefs.shouldPullInfo(crop.getTag())) {
+						getCropInfo(mAdapter.getLatestTimestamp());
+					}
 				} else {
-					getCropInfo("0");
+					getInfoInitially();
 				}
-
-			} else {
-				lvInfo.onRefreshComplete();
 			}
+			lvInfo.onRefreshComplete();
 		}
 
 	}
