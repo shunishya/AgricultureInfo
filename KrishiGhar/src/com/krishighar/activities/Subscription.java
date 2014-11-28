@@ -136,8 +136,9 @@ public class Subscription extends SherlockFragmentActivity implements
 	}
 
 	@Override
-	public void onErrorResponse(VolleyError arg0) {
-		Toast.makeText(Subscription.this, "Please try again later.",
+	public void onErrorResponse(VolleyError error) {
+		Toast.makeText(Subscription.this,
+				"Subscription::Please try again later." + error.toString(),
 				Toast.LENGTH_SHORT).show();
 
 	}
@@ -211,5 +212,5 @@ public class Subscription extends SherlockFragmentActivity implements
 		frag.setVisibility(View.VISIBLE);
 		btnTryAgain.setVisibility(View.GONE);
 	}
-	
+
 }

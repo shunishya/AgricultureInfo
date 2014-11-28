@@ -12,5 +12,6 @@ public class KrishiGharUrls {
 	public static String GET_CROP_INFO_URL = BASE_URL_1 + "info/";
 	public static String SEND_GCM_REGISTRATION_ID = BASE_URL_1 + "gcm";
 	public static String GET_PROVIDERS_INFO = BASE_URL_1 + "providers";
+	public static String SYNC_CONTACTS_URL = BASE_URL_1 + "contacts";
 
 }

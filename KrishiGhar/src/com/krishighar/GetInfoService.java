@@ -30,6 +30,7 @@ public class GetInfoService extends Service implements Listener<JSONObject>,
 	private AgricultureInfoPreference mPrefs;
 	private AgricultureItemDbHelper mItemDbHelper;
 	private int i = 0;
+	private int tagCount;
 	private List<String> tags;
 
 	@Override
@@ -40,6 +41,7 @@ public class GetInfoService extends Service implements Listener<JSONObject>,
 		mItemDbHelper = new AgricultureItemDbHelper(getApplicationContext());
 		tags = new ArrayList<String>();
 		tags = mItemDbHelper.getTags();
+		tagCount = tags.size();
 		mPrefs = new AgricultureInfoPreference(getApplicationContext());
 		long timestamp = mInfoHelper.getLatestTimestampOfItem(tags.get(i));
 		getCropInfo(tags.get(i), timestamp);
@@ -60,10 +62,11 @@ public class GetInfoService extends Service implements Listener<JSONObject>,
 				AppUtil.getInstance().addToRequestQueue(jsonRequest);
 			} else {
 				i++;
-				if (i < tags.size()) {
+				if (i < tagCount) {
 					getCropInfo(tags.get(i),
 							mInfoHelper.getLatestTimestampOfItem(tags.get(i)));
 				}
+
 			}
 		} else {
 			String url = KrishiGharUrls.GET_CROP_INFO_URL + tag;
@@ -88,7 +91,7 @@ public class GetInfoService extends Service implements Listener<JSONObject>,
 			mInfoHelper.addInfo(response.getInfos(), tags.get(i));
 		}
 		i++;
-		if (i < tags.size()) {
+		if (i < tagCount) {
 			getCropInfo(tags.get(i),
 					mInfoHelper.getLatestTimestampOfItem(tags.get(i)));
 		} else {

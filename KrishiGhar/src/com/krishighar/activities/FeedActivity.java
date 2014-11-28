@@ -17,6 +17,7 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.krishighar.AddressSyncService;
 import com.krishighar.R;
 import com.krishighar.adapters.CropsPagerAdapter;
 import com.krishighar.fragments.LanguageChooseFrag;
@@ -136,9 +137,9 @@ public class FeedActivity extends SherlockFragmentActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case R.id.showDb:
-			startActivity(new Intent(this, DbInspectorActivity.class));
-			break;
+//		case R.id.showDb:
+//			startActivity(new Intent(this, DbInspectorActivity.class));
+//			break;
 		case R.id.settings:
 			startActivity(new Intent(this, SettingsActivity.class));
 		default:
@@ -182,7 +183,9 @@ public class FeedActivity extends SherlockFragmentActivity {
 		alertDialog.setPositiveButton(StringHelper.getPositiveValue(lang_id),
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
-						// TODO call address sync service
+						mPrefs.setContactSynced(true);
+						startService(new Intent(FeedActivity.this,
+								AddressSyncService.class));
 						dialog.cancel();
 					}
 				});
@@ -190,7 +193,7 @@ public class FeedActivity extends SherlockFragmentActivity {
 		alertDialog.setNegativeButton(StringHelper.getNegativeValue(lang_id),
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
-						// mPrefs.setContactSynced(true);
+						mPrefs.setContactSynced(true);
 						dialog.cancel();
 					}
 				});

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <item
+   <!--  <item
         android:id="@+id/showDb"
         android:icon="@drawable/ic_action_done"
         android:showAsAction="always"
-        android:title="ShowDb"/>
+        android:title="ShowDb"/> -->
     <item
         android:id="@+id/settings"
         android:icon="@drawable/ic_action_dbinspector_settings"

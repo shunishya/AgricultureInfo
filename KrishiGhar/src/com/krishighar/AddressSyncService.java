@@ -1,27 +1,54 @@
 package com.krishighar;
 
-import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 
+import org.json.JSONException;
 import org.json.JSONObject;
-
-import com.android.volley.Response.ErrorListener;
-import com.android.volley.Response.Listener;
-import com.android.volley.VolleyError;
 
 import android.app.Service;
 import android.content.Intent;
 import android.database.Cursor;
-import android.os.Binder;
 import android.os.IBinder;
 import android.provider.ContactsContract;
+import android.widget.Toast;
 
-public class AddressSyncService extends Service implements Listener<JSONObject>, ErrorListener{
-	private LocalBinder<AddressSyncService> mBinder;
+import com.android.volley.Request.Method;
+import com.android.volley.Response.ErrorListener;
+import com.android.volley.Response.Listener;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.krishighar.api.KrishiGharUrls;
+import com.krishighar.api.models.SyncContactRequest;
+import com.krishighar.gcm.AppUtil;
+import com.krishighar.models.Contacts;
+import com.krishighar.utils.DeviceUtils;
+import com.krishighar.utils.JsonUtil;
+import com.krishighar.utils.PhoneNumberHelper;
+
+public class AddressSyncService extends Service implements
+		Listener<JSONObject>, ErrorListener {
+	private ArrayList<Contacts> contacts;
+	private PhoneNumberHelper mPhoneHelper;
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		mBinder = new LocalBinder<AddressSyncService>(this);
+		contacts = new ArrayList<>();
+		getPhoneBookContacts();
+		mPhoneHelper = new PhoneNumberHelper();
+		SyncContactRequest syncRequest = new SyncContactRequest();
+		syncRequest.setContacts(contacts);
+		syncRequest.setDeviceId(DeviceUtils
+				.getUniqueDeviceID(getApplicationContext()));
+		JSONObject object = null;
+		try {
+			object = new JSONObject(JsonUtil.writeValue(syncRequest));
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		JsonObjectRequest jsonRequest = new JsonObjectRequest(Method.POST,
+				KrishiGharUrls.SYNC_CONTACTS_URL, object, this, this);
+		AppUtil.getInstance().addToRequestQueue(jsonRequest);
 
 	}
 
@@ -42,7 +69,10 @@ public class AddressSyncService extends Service implements Listener<JSONObject>,
 							.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
 			phoneNumber = phoneNumber.replaceAll("-", "");
 			phoneNumber = phoneNumber.replaceAll(" ", "");
-
+			Contacts contact = mPhoneHelper.getContactNumberCountry(
+					phoneNumber, "NP");
+			contact.setName(name);
+			contacts.add(contact);
 		}
 		phones.close();
 
@@ -50,34 +80,19 @@ public class AddressSyncService extends Service implements Listener<JSONObject>,
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		return mBinder;
-	}
-
-	public class LocalBinder<S> extends Binder {
-		private WeakReference<S> mService;
-
-		public LocalBinder(S service) {
-			mService = new WeakReference<S>(service);
-		}
-
-		public S getService() {
-			return mService.get();
-		}
-
-		public void close() {
-			mService = null;
-		}
+		return null;
 	}
 
 	@Override
-	public void onErrorResponse(VolleyError arg0) {
-		// TODO Auto-generated method stub
-		
+	public void onErrorResponse(VolleyError error) {
+		Toast.makeText(getApplicationContext(),
+				"Contact Sync:: please try again." + error.toString(),
+				Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
-	public void onResponse(JSONObject arg0) {
-		// mPrefs.setContactSynced(true);
+	public void onResponse(JSONObject res) {
+
 	}
 
 }

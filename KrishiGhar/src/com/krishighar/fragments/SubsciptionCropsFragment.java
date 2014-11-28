@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
@@ -49,6 +50,7 @@ public class SubsciptionCropsFragment extends SherlockFragment implements
 	private ExpandableListView agricultureCategoryList;
 	private AgricultureCategoryAdapter mAdapter;
 	private List<AgricultureItem> selectedItems;
+	private ProgressBar mProgressBar;
 
 	public SubsciptionCropsFragment(SubcriptionListener subscriptionListener) {
 		this.mSubscriptionListener = subscriptionListener;
@@ -59,6 +61,7 @@ public class SubsciptionCropsFragment extends SherlockFragment implements
 			@Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 		View rootView = inflater.inflate(
 				R.layout.agriculture_category_item_list, container, false);
+		mProgressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
 		agricultureCategoryList = (ExpandableListView) rootView
 				.findViewById(R.id.agricuture_list);
 		selectedItems = new ArrayList<AgricultureItem>();
@@ -74,6 +77,8 @@ public class SubsciptionCropsFragment extends SherlockFragment implements
 
 		getSherlockActivity().getSupportActionBar().setTitle(
 				StringHelper.getCropdFragTitle(mPref.getLanguage()));
+		mProgressBar.setVisibility(View.VISIBLE);
+		agricultureCategoryList.setVisibility(View.GONE);
 		requestForCrops();
 	}
 
@@ -127,12 +132,16 @@ public class SubsciptionCropsFragment extends SherlockFragment implements
 		Toast.makeText(getSherlockActivity(),
 				"Get Crops error::" + error.toString(), Toast.LENGTH_SHORT)
 				.show();
+		mProgressBar.setVisibility(View.GONE);
 		Button btnTryAgain = mSubscriptionListener.onVolleyError();
+		agricultureCategoryList.setVisibility(View.GONE);
 		btnTryAgain.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
+				mProgressBar.setVisibility(View.VISIBLE);
 				requestForCrops();
+				agricultureCategoryList.setVisibility(View.VISIBLE);
 				mSubscriptionListener.onRequest();
 			}
 		});
@@ -144,6 +153,8 @@ public class SubsciptionCropsFragment extends SherlockFragment implements
 		GetAgricultureCategoryResponse res = (GetAgricultureCategoryResponse) JsonUtil
 				.readJsonString(response.toString(),
 						GetAgricultureCategoryResponse.class);
+		mProgressBar.setVisibility(View.GONE);
+		agricultureCategoryList.setVisibility(View.VISIBLE);
 		mAdapter = new AgricultureCategoryAdapter(getSherlockActivity(),
 				createCategoryList(res.getAgricultureCategories()),
 				createCollection(res.getAgricultureCategories()));
@@ -186,7 +197,7 @@ public class SubsciptionCropsFragment extends SherlockFragment implements
 
 		item.setChecked(item.isChecked() ? false : true);
 		item.getItems().setTag(
-				String.valueOf(mSubscriptionListener.getLocationId())+"-"
+				String.valueOf(mSubscriptionListener.getLocationId()) + "-"
 						+ String.valueOf(item.getItems().getCropId()));
 		mAdapter.notifyDataSetChanged();
 		if (item.isChecked()) {

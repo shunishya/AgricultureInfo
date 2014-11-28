@@ -26,10 +26,13 @@
 
     <!-- Network State Permissions to detect Internet status -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    
 
     <!-- Permission to vibrate -->
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
     <application
         android:name="com.krishighar.gcm.AppUtil"
@@ -72,11 +75,11 @@
             android:name="com.krishighar.activities.SettingsActivity"
             android:label="@string/app_name" >
         </activity>
-        <activity
+       <!--  <activity
             android:name="im.dino.dbinspector.activities.DbInspectorActivity"
             android:label="Example DbInspector" >
         </activity>
-
+ -->
         <receiver
             android:name="com.google.android.gcm.GCMBroadcastReceiver"
             android:permission="com.google.android.c2dm.permission.SEND" >
